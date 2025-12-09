@@ -38,7 +38,7 @@
         <div class="sidebar-menu-area">
             <ul class="sidebar-menu" id="sidebar-menu">
                 <li>
-                    <a href="javascript:void(0)">
+                    <a href="${pageContext.request.contextPath}/admin">
                         <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
                         <span>Trang Chủ</span>
                     </a>
@@ -47,9 +47,27 @@
                 <li class="sidebar-menu-group-title">Quản Lý</li>
                 
                 <li>
-                    <a href="${pageContext.request.contextPath}/admin/quanlytour">
+                    <a href="${pageContext.request.contextPath}/admin/quanlytour" class="active">
                         <iconify-icon icon="mingcute:storage-line" class="menu-icon"></iconify-icon>
-                        <span>Danh Sách Tour</span>
+                        <span>Quản Lý Tour</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/admin/quanlyblog">
+                        <iconify-icon icon="icon-park-outline:writing-fluently" class="menu-icon"></iconify-icon>
+                        <span>Quản Lý Blog</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/admin/quanlylienhe">
+                        <iconify-icon icon="fluent:contact-card-20-regular" class="menu-icon"></iconify-icon>
+                        <span>Quản Lý Liên Hệ</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/admin/quanlymenu">
+                        <iconify-icon icon="mingcute:menu-line" class="menu-icon"></iconify-icon>
+                        <span>Quản Lý Menu</span>
                     </a>
                 </li>
             </ul>
@@ -173,7 +191,7 @@
                                                     </c:if>
                                             </td>
                                             <td>
-                                                <div class="flex items-center gap-2">
+                                                <div class="flex items-center justify-center gap-2">
                                                     <!-- Nút Toggle Status -->
                                                     <a href="${pageContext.request.contextPath}/admin/quanlytour?action=toggle&id=${t.tourId}" 
                                                        class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center"

@@ -37,7 +37,7 @@
         <div class="sidebar-menu-area">
             <ul class="sidebar-menu" id="sidebar-menu">
                 <li>
-                    <a href="javascript:void(0)">
+                    <a href="${pageContext.request.contextPath}/admin">
                         <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
                         <span>Trang Chủ</span>
                     </a>
@@ -46,9 +46,27 @@
                 <li class="sidebar-menu-group-title">Quản Lý</li>
                 
                 <li>
-                    <a href="${pageContext.request.contextPath}/admin/quanlytour">
+                    <a href="${pageContext.request.contextPath}/admin/quanlytour" class="active">
                         <iconify-icon icon="mingcute:storage-line" class="menu-icon"></iconify-icon>
-                        <span>Danh Sách Tour</span>
+                        <span>Quản Lý Tour</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/admin/quanlyblog">
+                        <iconify-icon icon="icon-park-outline:writing-fluently" class="menu-icon"></iconify-icon>
+                        <span>Quản Lý Blog</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/admin/quanlylienhe">
+                        <iconify-icon icon="fluent:contact-card-20-regular" class="menu-icon"></iconify-icon>
+                        <span>Quản Lý Liên Hệ</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/admin/quanlymenu">
+                        <iconify-icon icon="mingcute:menu-line" class="menu-icon"></iconify-icon>
+                        <span>Quản Lý Menu</span>
                     </a>
                 </li>
             </ul>
@@ -113,9 +131,10 @@
                             <h5 class="text-lg font-semibold mb-0">Cập nhật thông tin</h5>
                         </div>
                         <div class="card-body">
-                            <form action="${pageContext.request.contextPath}/admin/quanlytour" method="post">
+                            <form action="${pageContext.request.contextPath}/admin/quanlytour" method="post" enctype="multipart/form-data">
                                 <input type="hidden" name="action" value="update">
                                 <input type="hidden" name="id" value="${tour.tourId}">
+                                <input type="hidden" name="currentImage" value="${tour.image}">
                                 
                                 <div class="grid grid-cols-12 gap-4">
                                     <!-- Tên Tour -->
@@ -142,16 +161,24 @@
 
                                     <!-- Ảnh -->
                                     <div class="col-span-12">
-                                        <label class="form-label">Hình Ảnh (Tên file)</label>
-                                        <div class="icon-field">
-                                            <span class="icon">
-                                                <iconify-icon icon="solar:gallery-wide-linear"></iconify-icon>
-                                            </span>
-                                            <input type="text" name="image" class="form-control" value="${tour.image}">
+                                        <label class="form-label">Tải Lên Ảnh Mới (Tùy chọn)</label>
+                                        <div class="flex items-center">
+                                            <label for="imageFile" class="btn btn-secondary-600 cursor-pointer rounded-r-none flex items-center gap-2">
+                                                <iconify-icon icon="solar:upload-outline" class="text-lg"></iconify-icon>
+                                                <span>Chọn tệp</span>
+                                            </label>
+                                            <span id="fileName" class="text-neutral-500 bg-neutral-100 dark:bg-neutral-700 h-11 flex items-center px-4 rounded-r-lg border border-l-0 border-neutral-300 dark:border-neutral-600 max-w-64 overflow-hidden text-ellipsis whitespace-nowrap">Chưa có tệp nào được chọn</span>
                                         </div>
+                                        <input type="file" name="imageFile" id="imageFile" class="hidden" accept="image/*">
+                                        
                                         <div class="mt-2">
-                                            <span class="text-sm text-neutral-500">Hiện tại:</span>
-                                            <img src="${pageContext.request.contextPath}/assets/images/products/${tour.image}" alt="Current Image" class="w-20 h-20 object-cover rounded-lg border mt-1" onerror="this.style.display='none'">
+                                            <span class="text-sm text-neutral-500">Ảnh hiện tại:</span>
+                                            <c:if test="${not empty tour.image}">
+                                                <img src="${pageContext.request.contextPath}/assets/images/products/${tour.image}" alt="Current Image" class="w-20 h-20 object-cover rounded-lg border mt-1">
+                                            </c:if>
+                                            <c:if test="${empty tour.image}">
+                                                <span class="text-sm text-neutral-500 italic">Chưa có ảnh</span>
+                                            </c:if>
                                         </div>
                                     </div>
                                     
@@ -206,6 +233,13 @@
     <script src="${pageContext.request.contextPath}/assets/js/flowbite.min.js"></script>
     <!-- main js -->
     <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+    
+    <script>
+        document.getElementById('imageFile').addEventListener('change', function() {
+            var fileName = this.files[0] ? this.files[0].name : 'Chưa có tệp nào được chọn';
+            document.getElementById('fileName').textContent = fileName;
+        });
+    </script>
     <!-- ..::  scripts  end ::.. -->
 
 </body>
