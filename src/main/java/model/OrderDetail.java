@@ -69,4 +69,12 @@ public class OrderDetail {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+    
+    private String tourName;
+    private String image;
+    
+    public String getTourName() { return tourName; }
+    public void setTourName(String tourName) { this.tourName = tourName; }
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
 }

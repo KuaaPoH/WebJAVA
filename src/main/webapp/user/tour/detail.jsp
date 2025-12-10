@@ -189,9 +189,197 @@
                                 <h4>Chi Tiết Lịch Trình</h4>
                                 <div>${tour.detail}</div>
                             </div>
+
+                            <!-- MAP -->
+                            <div id="single-map" class="single-map mb-4">
+                                <h4>Bản Đồ</h4>
+                                <div class="map rounded overflow-hidden">
+                                    <div style="width: 100%">
+                                        <iframe class="rounded overflow-hidden" height="400" src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=+(Hanoi)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- REVIEWS SUMMARY -->
+                            <div id="single-review" class="single-review mb-4">
+                                <h4>Đánh Giá Trung Bình</h4>
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-lg-4 col-md-4">
+                                        <div class="review-box bg-title text-center py-4 p-2 rounded">
+                                            <h2 class="mb-1 white"><span>${avgStar}</span>/5</h2>
+                                            <h4 class="white mb-1">"Tuyệt vời"</h4>
+                                            <p class="mb-0 white font-italic">Dựa trên ${reviewCount} đánh giá</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-8 col-md-8">
+                                        <div class="review-progress">
+                                            <!-- Progress bars static for now -->
+                                            <div class="progress-item mb-1">
+                                                <p class="mb-0">Sạch sẽ</p>
+                                                <div class="progress rounded">
+                                                    <div class="progress-bar bg-theme" role="progressbar" style="width:90%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="progress-item mb-1">
+                                                <p class="mb-0">Tiện nghi</p>
+                                                <div class="progress rounded">
+                                                    <div class="progress-bar bg-theme" role="progressbar" style="width:80%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="progress-item mb-1">
+                                                <p class="mb-0">Giá cả</p>
+                                                <div class="progress rounded">
+                                                    <div class="progress-bar bg-theme" role="progressbar" style="width:85%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- COMMENT LIST -->
+                            <div id="single-comments" class="single-comments single-box mb-4">
+                                <h5 class="border-b pb-2 mb-2">Bình Luận (${reviewCount})</h5>
+                                
+                                <c:if test="${empty reviews}">
+                                    <p>Chưa có bình luận nào. Hãy là người đầu tiên đánh giá tour này!</p>
+                                </c:if>
+
+                                <c:forEach var="r" items="${reviews}">
+                                    <div class="comment-box">
+                                        <div class="comment-image">
+                                            <c:choose>
+                                                <c:when test="${r.image != null && r.image.startsWith('http')}">
+                                                    <img src="${r.image}" alt="avatar" style="width: 90px; height: 100px; object-fit: cover;" onerror="this.src='${pageContext.request.contextPath}/assets/travelin/images/reviewer/avatar-1.jpg'">
+                                                </c:when>
+                                                <c:when test="${r.image != null && not empty r.image}">
+                                                     <img src="${pageContext.request.contextPath}/assets/travelin/images/${r.image}" alt="avatar" style="width: 90px; height: 100px; object-fit: cover;" onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/travelin/images/reviewer/avatar-1.jpg';">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <img src="${pageContext.request.contextPath}/assets/travelin/images/reviewer/avatar-1.jpg" alt="avatar" style="width: 90px; height: 100px; object-fit: cover;">
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                        <div class="comment-content rounded">
+                                            <h5 class="mb-1">${r.name != null ? r.name : 'Ẩn Danh'}</h5>
+                                            <p class="comment-date mb-2 text-muted" style="position: static; float: none; display: block;"><fmt:formatDate value="${r.createdDate}" pattern="dd/MM/yyyy HH:mm"/></p>
+                                            
+                                            <div class="comment-rate">
+                                                <div class="rating mar-right-15">
+                                                    <c:forEach begin="1" end="5" var="i">
+                                                        <span class="fa fa-star ${i <= r.star ? 'checked' : ''}"></span>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>    
+                                            <p class="comment">${r.detail}</p>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+
+                            <!-- ADD REVIEW FORM -->
+                            <div id="single-add-review" class="single-add-review">
+                                <h4>Viết Đánh Giá</h4>
+                                <form action="tour-detail" method="post">
+                                    <input type="hidden" name="tourId" value="${tour.tourId}">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-2">
+                                                <input type="text" name="name" placeholder="Tên của bạn (Để trống nếu muốn ẩn danh)">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-2">
+                                                <input type="email" name="email" placeholder="Email (Không bắt buộc)">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-2">
+                                                <label class="mb-1">Đánh giá của bạn:</label>
+                                                <div class="star-rating-select">
+                                                    <i class="fa fa-star" data-rating="1"></i>
+                                                    <i class="fa fa-star" data-rating="2"></i>
+                                                    <i class="fa fa-star" data-rating="3"></i>
+                                                    <i class="fa fa-star" data-rating="4"></i>
+                                                    <i class="fa fa-star" data-rating="5"></i>
+                                                    <input type="hidden" name="star" id="rating-value" value="5">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-2">
+                                                <textarea name="detail" placeholder="Nội dung đánh giá" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-btn">
+                                                <button type="submit" class="nir-btn">Gửi Đánh Giá</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+    <!-- Script xử lý Star Rating -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const stars = document.querySelectorAll('.star-rating-select .fa');
+            const ratingInput = document.getElementById('rating-value');
+            
+            // Set default (5 star)
+            stars.forEach(s => s.classList.add('checked'));
+
+            stars.forEach(star => {
+                star.style.cursor = 'pointer';
+                star.style.fontSize = '20px';
+                star.style.marginRight = '5px';
+                
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    ratingInput.value = rating;
+                    
+                    stars.forEach(s => {
+                        if (s.getAttribute('data-rating') <= rating) {
+                            s.classList.add('checked');
+                            s.style.color = 'orange'; // Fallback color
+                        } else {
+                            s.classList.remove('checked');
+                            s.style.color = '#ccc';
+                        }
+                    });
+                });
+                
+                // Hover effect (Optional)
+                star.addEventListener('mouseover', function() {
+                    const rating = this.getAttribute('data-rating');
+                    stars.forEach(s => {
+                        if (s.getAttribute('data-rating') <= rating) {
+                            s.style.color = 'orange';
+                        } else {
+                            s.style.color = '#ccc';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseout', function() {
+                    // Reset to selected value
+                    const currentRating = ratingInput.value;
+                    stars.forEach(s => {
+                        if (s.getAttribute('data-rating') <= currentRating) {
+                            s.style.color = 'orange'; // Hoặc dùng class .checked của template
+                            s.classList.add('checked');
+                        } else {
+                            s.style.color = '#ccc';
+                            s.classList.remove('checked');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 
                 <div class="col-lg-4 ps-lg-4">
                     <div class="sidebar-sticky sticky1">
@@ -207,28 +395,11 @@
                             </div>
                         </div>
                         
-                        <!-- BOOKING FORM -->
-                        <div class="desc-box bg-grey p-4 rounded mb-4">
+                        <!-- BOOKING LINK -->
+                        <div class="desc-box bg-grey p-4 rounded mb-4 text-center">
                             <h4 class="mb-2">Đặt Tour Ngay</h4>
-                            <form action="${pageContext.request.contextPath}/booking" method="post">
-                                <input type="hidden" name="tourId" value="${tour.tourId}">
-                                <div class="form-group mb-2">
-                                    <input type="text" name="fullname" class="form-control" placeholder="Họ và tên" required>
-                                </div>
-                                <div class="form-group mb-2">
-                                    <input type="email" name="email" class="form-control" placeholder="Email" required>
-                                </div>
-                                <div class="form-group mb-2">
-                                    <input type="tel" name="phone" class="form-control" placeholder="Số điện thoại" required>
-                                </div>
-                                <div class="form-group mb-2">
-                                    <input type="number" name="guests" class="form-control" placeholder="Số lượng khách" min="1" required>
-                                </div>
-                                <div class="form-group mb-2">
-                                    <input type="date" name="date" class="form-control" required>
-                                </div>
-                                <button type="submit" class="nir-btn w-100">Gửi Yêu Cầu</button>
-                            </form>
+                            <p class="mb-4">Đặt tour ngay hôm nay để giữ chỗ và nhận ưu đãi!</p>
+                            <a href="${pageContext.request.contextPath}/booking-page?id=${tour.tourId}" class="nir-btn w-100">Tiến Hành Đặt Tour</a>
                         </div>
 
                     </div>

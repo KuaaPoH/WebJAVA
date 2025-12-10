@@ -22,6 +22,11 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
     -   [x] Setup & Database: Hoàn thiện kịch bản SQL, hướng dẫn cài đặt CSDL và môi trường Eclipse.
     -   [x] Hoàn thiện đầy đủ Model, DAO, Servlet cho các chức năng: Quản lý Tour, Blog, Liên hệ.
     -   [x] Tích hợp chức năng Upload ảnh, tự động lưu vào thư mục source.
+    -   [x] **Quản Lý Đơn Hàng:**
+        -   [x] Tạo `dal.admin.OrderDAO`: Lấy danh sách đơn hàng, chi tiết đơn, cập nhật trạng thái.
+        -   [x] Tạo `controller.admin.OrderServlet` (đổi tên từ OrderController): Xử lý request xem danh sách, chi tiết, duyệt/hủy.
+        -   [x] Cập nhật Models `Order.java` và `OrderDetail.java` với các trường phụ trợ (`statusName`, `tourName`, `image`) để hiển thị thông tin đầy đủ.
+        -   [x] Khắc phục lỗi "List cannot be resolved to a type" do thiếu import.
 
 -   **Frontend (Admin):**
     -   [x] Áp dụng template WowDash cho toàn bộ trang quản trị.
@@ -29,58 +34,63 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
     -   [x] Hoàn thiện giao diện xem và xóa cho Liên hệ.
     -   [x] Giao diện responsive, có dark mode, và đã được Việt hóa.
     -   [x] Tích hợp thư viện `simple-datatables` với cấu hình tiếng Việt.
-    
--   **Tái cấu trúc Module Admin:**
-    -   [x] Di chuyển tất cả Admin Servlet vào package `controller.admin`.
-    -   [x] Di chuyển tất cả Admin DAO vào package `dal.admin`.
-    -   [x] Cập nhật `package` và `import` trong tất cả các file liên quan.
-
--   **Tích hợp Giao diện người dùng (User Frontend - Travelin Template):**
-    -   [x] Copy các tài nguyên (assets: CSS, JS, Images, Fonts) của template "Travelin" vào `src/main/webapp/assets/travelin`.
-    -   [x] Xóa bỏ assets của template cũ (`gowilds`).
-
--   **Cấu trúc thư mục View User:**
-    -   [x] Tạo thư mục `src/main/webapp/user/`, `user/tour/`, `user/booking/`.
-    -   [x] Di chuyển `home.jsp` vào `src/main/webapp/user/index.jsp`.
-    -   [x] Di chuyển `tour-detail.jsp` vào `src/main/webapp/user/tour/detail.jsp`.
-    -   [x] Di chuyển `booking-success.jsp` vào `src/main/webapp/user/booking/success.jsp`.
-    -   [x] Cập nhật các đường dẫn assets trong các JSP sang đường dẫn tuyệt đối `${pageContext.request.contextPath}/assets/travelin/...`.
-    -   [x] Cập nhật đường dẫn các Servlet trong các JSP.
+    -   [x] **Component Sidebar Menu dùng chung:**
+        -   [x] Di chuyển sidebar Admin sang component dùng chung (`admin/components/sidebar.jsp`).
+        -   [x] Cập nhật tất cả các trang Admin JSP (Dashboard, Quản lý Tour, Blog, Liên hệ, Menu, Đơn hàng, Thêm/Sửa Tour, Blog, Menu) để sử dụng component sidebar dùng chung và đảm bảo `taglib` đầy đủ.
+    -   [x] **Quản Lý Đơn Hàng:**
+        -   [x] Tạo giao diện `webapp/admin/quanlydonhang/index.jsp` (Danh sách đơn hàng).
+        -   [x] Tạo giao diện `webapp/admin/quanlydonhang/detail.jsp` (Chi tiết & Cập nhật trạng thái đơn hàng).
 
 -   **Backend (User):**
     -   [x] Tạo package `dal.user` và `controller.user`.
-    -   [x] Tạo `dal.user.TourDAO` với các phương thức `getTopTours` và `getTourById`, `getAllTours`.
-    -   [x] Tạo `controller.user.HomeServlet` xử lý request `/home` và `/`, forward tới `user/index.jsp`.
-    -   [x] Tạo `controller.user.TourDetailServlet` xử lý request `/tour-detail`, forward tới `user/tour/detail.jsp`.
-    -   [x] Tạo `controller.user.TourListServlet` xử lý request `/tours`, forward tới `user/tour/index.jsp`.
+    -   [x] TourDAO, OrderDAO, TourReviewDAO.
+    -   [x] HomeServlet, TourDetailServlet, BookingServlet, BookingPageServlet.
 
--   **Chức năng Đặt tour (Booking):**
-    -   [x] Cập nhật Database: Thêm cột `Email` vào `tb_Order` và `DepartureDate` vào `tb_OrderDetail`.
-    -   [x] Cập nhật Model: Thêm field `email` vào `Order.java` và `departureDate` vào `OrderDetail.java`.
-    -   [x] Tạo `dal.user.OrderDAO` với phương thức `insertOrder` có hỗ trợ Transaction.
-    -   [x] Tạo `controller.user.BookingServlet` xử lý POST request `/booking`, nhận dữ liệu form, tính toán, gọi DAO và forward tới `user/booking/success.jsp`.
-    -   [x] Tạo `src/main/webapp/user/booking/success.jsp` để thông báo đặt tour thành công.
+-   **Frontend (User - Public):**
+    -   [x] Tích hợp template Travelin.
+    -   [x] Trang Chủ (Home): Hiển thị tour nổi bật.
+    -   [x] Trang Chi Tiết Tour:
+        -   [x] Hiển thị thông tin tour.
+        -   [x] Tích hợp Bản đồ (Google Maps).
+        -   [x] Hiển thị danh sách đánh giá (Reviews) & Bình luận từ DB.
+        -   [x] Form gửi đánh giá với tính năng chọn 5 sao tương tác, xử lý avatar mặc định.
+        -   [x] Cải thiện hiển thị avatar và tên/ngày trong comment.
+    -   [x] Chức năng Đặt Tour (Booking):
+        -   [x] Trang Booking chuyên biệt (`user/booking/index.jsp`) với giao diện chuyên nghiệp.
+        -   [x] Tính năng chọn Loại phòng (Standard, Deluxe...) và tự động tính tổng tiền.
+        -   [x] Tính năng chọn Phương thức thanh toán (Thẻ tín dụng/ghi nợ, Thanh toán điện tử/Paypal) và tự động tính tổng tiền.
+        -   [x] Validate form: Tự động định dạng ngày hết hạn thẻ, giới hạn CVC.
+        -   [x] Sửa lỗi nút "Gửi Yêu Cầu" không click được (do xung đột JS template).
+        -   [x] Sửa lỗi truncate code đơn hàng.
 
-### ⚠️ Đang thực hiện / Cần kiểm tra
-
--   [ ] **Debug lỗi nút "Gửi Yêu Cầu" không click được** trên trang `user/tour/detail.jsp`.
-    -   **Triệu chứng:** Khi di chuột qua nút, màu thay đổi (xanh -> vàng), nhưng không thể nhấp chuột vào nút.
-    -   **Kiểm tra ban đầu:**
-        -   Form có `action="${pageContext.request.contextPath}/booking"` và `method="post"` chính xác.
-        -   Tạm thời comment các script `plugin.js` và `main.js` dẫn đến trang bị kẹt ở màn hình preloader, cho thấy các script này là cần thiết cho giao diện.
-    -   **Giả thuyết:** Có thể do một JavaScript event handler đang chặn sự kiện click, hoặc một phần tử trong suốt đang nằm đè lên nút, hoặc script vô hiệu hóa nút một cách gián tiếp.
-    -   **Các bước debug cần thực hiện:** Kiểm tra tab "Elements" (cây DOM, thuộc tính `disabled`, `pointer-events`), tab "Event Listeners" trong Developer Tools của trình duyệt để xác định nguyên nhân chính xác.
+### ⚠️ Đang thực hiện
+    -   [ ] **Hoàn thiện chức năng Duyệt/Hủy Đơn Hàng (Admin):**
+        -   [ ] Cập nhật giao diện `webapp/admin/quanlydonhang/detail.jsp` để có các nút (hoặc dropdown) cho phép Admin thay đổi trạng thái đơn hàng (Duyệt, Hủy).
+        -   [ ] Đảm bảo `controller.admin.OrderServlet` xử lý đúng logic cập nhật trạng thái đơn hàng.
 
 ---
 
-## 3. Kế Hoạch Tiếp Theo (Đã Cập Nhật)
-
-### 🚀 Giao Diện Người Dùng (Frontend - Public)
--   [ ] Xây dựng các trang khác: Giới thiệu, Liên hệ, Tin tức.
--   [ ] Triển khai chức năng lọc, tìm kiếm, phân trang cho danh sách tour.
--   [ ] Tích hợp Login/Register.
+## 3. Kế Hoạch Tiếp Theo
 
 ### 🛡️ Quản Trị Nâng Cao (Admin Dashboard)
--   [ ] **Quản Lý Đơn Hàng (Booking):** Xem danh sách khách đặt, duyệt đơn, hủy đơn.
--   [ ] **Quản Lý Danh Mục:** Thêm/Sửa/Xóa loại tour (Trong nước, Nước ngoài...).
--   [ ] **Quản Lý Người Dùng:** Phân quyền Admin/Khách hàng.
+-   [ ] **Cải tiến Dashboard:**
+    -   [ ] Cập nhật Servlet Dashboard để lấy dữ liệu thống kê dynamic (Doanh thu, số đơn hàng, số khách).
+    -   [ ] Cập nhật biểu đồ doanh thu và phân tích đơn hàng với dữ liệu thật từ DB.
+-   [ ] **Quản Lý Đánh Giá (Reviews):**
+    -   [ ] Tạo `dal.admin.TourReviewDAO` (hoặc mở rộng `dal.user.TourReviewDAO`) để lấy danh sách reviews cho Admin.
+    -   [ ] Tạo `controller.admin.ReviewServlet`: Xử lý hiển thị danh sách reviews, duyệt/ẩn (toggle status).
+    -   [ ] Tạo giao diện `webapp/admin/quanlydanhgia/index.jsp`: Hiển thị bảng reviews, có nút duyệt/ẩn.
+-   [ ] **Quản Lý Danh Mục Tour:**
+    -   [ ] Tạo `dal.admin.TourCategoryDAO`.
+    -   [ ] Tạo `controller.admin.TourCategoryServlet`.
+    -   [ ] Tạo các trang `webapp/admin/quanlydanhmuc/index.jsp`, `create.jsp`, `edit.jsp`.
+-   [ ] **Quản Lý Người Dùng:** (Chức năng đăng nhập/đăng ký ở phía User cũng sẽ liên quan)
+    -   [ ] Tạo `dal.admin.AccountDAO` (quản lý Admin user) và `dal.user.CustomerDAO` (quản lý khách hàng).
+    -   [ ] Tạo `controller.admin.UserServlet`: Hiển thị danh sách user, phân quyền, khóa/mở khóa.
+    -   [ ] Tạo các trang `webapp/admin/quanlynguoidung/index.jsp`, `edit.jsp`.
+
+### 🚀 Giao Diện Người Dùng (Frontend - Public)
+-   [ ] Trang Tin Tức (Blog): Chỉnh sửa lại các trang blog để hiển thị thông tin động.
+-   [ ] Trang Liên Hệ: Xây dựng form liên hệ và xử lý gửi về Admin.
+-   [ ] Chức năng Tìm kiếm & Lọc Tour nâng cao.
+-   [ ] Đăng nhập / Đăng ký thành viên: Hoàn thiện chức năng đăng nhập, đăng ký, quản lý hồ sơ.

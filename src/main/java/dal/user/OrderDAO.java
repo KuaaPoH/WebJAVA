@@ -10,6 +10,32 @@ import java.sql.Statement;
 
 public class OrderDAO extends DBContext {
 
+    // Helper method to get or create Pending status ID
+    private int getOrCreatePendingStatusId() throws SQLException {
+        String statusName = "Pending";
+        String selectSql = "SELECT OrderStatusId FROM tb_OrderStatus WHERE Name = ?";
+        PreparedStatement st = connection.prepareStatement(selectSql);
+        st.setString(1, statusName);
+        ResultSet rs = st.executeQuery();
+        
+        if (rs.next()) {
+            return rs.getInt("OrderStatusId");
+        } else {
+            // Create new status if not exists
+            String insertSql = "INSERT INTO tb_OrderStatus (Name, Description) VALUES (?, ?)";
+            PreparedStatement insertSt = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+            insertSt.setString(1, statusName);
+            insertSt.setString(2, "Mới đặt hàng");
+            insertSt.executeUpdate();
+            ResultSet keys = insertSt.getGeneratedKeys();
+            if (keys.next()) {
+                return keys.getInt(1);
+            } else {
+                throw new SQLException("Could not create default OrderStatus.");
+            }
+        }
+    }
+
     public boolean insertOrder(Order order, OrderDetail detail) {
         boolean result = false;
         String sqlOrder = "INSERT INTO [dbo].[tb_Order] "
@@ -21,8 +47,13 @@ public class OrderDAO extends DBContext {
                 + "VALUES (?, ?, ?, ?, ?)";
 
         try {
-            // Tắt auto-commit để quản lý transaction
-            connection.setAutoCommit(false);
+            // Đảm bảo connection đang mở và auto-commit tắt
+            if (connection.getAutoCommit()) {
+                connection.setAutoCommit(false);
+            }
+
+            // 0. Get valid OrderStatusId
+            int statusId = getOrCreatePendingStatusId();
 
             // 1. Insert Order
             PreparedStatement stOrder = connection.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
@@ -33,7 +64,7 @@ public class OrderDAO extends DBContext {
             stOrder.setString(5, order.getEmail());
             stOrder.setInt(6, order.getTotalAmount());
             stOrder.setInt(7, order.getQuanlity()); // Tổng số lượng
-            stOrder.setInt(8, 1); // 1: Pending/Mới đặt
+            stOrder.setInt(8, statusId); 
             
             int affectedRows = stOrder.executeUpdate();
 
@@ -69,14 +100,14 @@ public class OrderDAO extends DBContext {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Insert Order Error: " + e.getMessage());
+            e.printStackTrace();
             try {
                 // Rollback nếu có lỗi
                 if (connection != null) {
                     connection.rollback();
                 }
             } catch (SQLException ex) {
-                System.out.println("Rollback Error: " + ex.getMessage());
+                ex.printStackTrace();
             }
         } finally {
             try {
@@ -85,7 +116,7 @@ public class OrderDAO extends DBContext {
                     connection.setAutoCommit(true);
                 }
             } catch (SQLException ex) {
-                System.out.println("Set AutoCommit Error: " + ex.getMessage());
+                ex.printStackTrace();
             }
         }
         return result;

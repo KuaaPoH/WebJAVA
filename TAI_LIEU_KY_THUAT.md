@@ -3,7 +3,7 @@
 Tài liệu này ghi lại các giải pháp kỹ thuật và kinh nghiệm được áp dụng trong quá trình phát triển dự án.
 
 ## 1. 📘 HƯỚNG DẪN: CHUYỂN ĐỔI TEMPLATE (LARAVEL/PHP -> JSP)
-*Kinh nghiệm rút ra từ việc chuyển đổi giao diện WowDash (Laravel).*
+*Kinh nghiệm rút ra từ việc chuyển đổi giao diện WowDash (Laravel) và Travelin (HTML/CSS/JS tĩnh).*
 
 ### Nguyên Tắc Cốt Lõi
 Tomcat không chạy được file `.php` hay cú pháp Blade (`@extends`, `{{ asset }}`). Cần trích xuất HTML/CSS/JS tĩnh và nhúng vào JSP.
@@ -83,7 +83,7 @@ if (fileName != null && !fileName.isEmpty()) {
 
 ---
 
-## 3. DASHBOARD & BIỂU ĐỒ THỐNG KÊ
+## 3. DASHBOARD & BIỂU ĐỒ THỐNG KÊ (Admin)
 
 ### Kiến Trúc Kỹ Thuật
 Hệ thống Dashboard hoạt động theo mô hình MVC tiêu chuẩn:
@@ -131,3 +131,116 @@ Sử dụng thư viện **ApexCharts** qua CDN để vẽ biểu đồ tương t
         data: revenueDataArray // Biến mảng JS đã được parse an toàn
     }]
     ```
+
+---
+
+## 4. 🗂️ QUẢN LÝ ADMIN SIDEBAR MENU (Refactoring)
+
+### Vấn đề
+Ban đầu, mã HTML cho thanh điều hướng bên (sidebar menu) của trang Admin được đặt lặp đi lặp lại trong nhiều file JSP (ví dụ: `admin/quanlytour/index.jsp`, `admin/quanlyblog/index.jsp`, `admin/quanlydonhang/index.jsp`,...). Điều này gây khó khăn cho việc bảo trì, cập nhật, và mở rộng menu.
+
+### Giải pháp
+Tạo một Component JSP dùng chung (`sidebar.jsp`) và sử dụng lệnh `<%@include file="..." %>` để nhúng vào tất cả các trang Admin cần thiết.
+
+### Chi tiết kỹ thuật
+-   **File Component:** `src/main/webapp/admin/components/sidebar.jsp`
+-   **Logic Active:** Trạng thái "active" của menu item được xác định động dựa vào URI của request hiện tại. Điều này cho phép mục menu tương ứng sáng lên khi người dùng điều hướng đến trang đó.
+    ```jsp
+    <li class="${request.getRequestURI().contains("/admin/orders") ? "active" : ""}">
+        <a href="${pageContext.request.contextPath}/admin/orders">
+            <iconify-icon icon="solar:bag-bold" class="menu-icon"></iconify-icon>
+            <span>Quản Lý Đơn Hàng</span>
+        </a>
+    </li>
+    ```
+    -   `request.getRequestURI()`: Lấy đường dẫn URI của request.
+    -   `.contains(...)`: Kiểm tra xem URI có chứa chuỗi của đường dẫn menu hay không.
+    -   `"active"`: Class CSS mà template WowDash sử dụng để highlight mục menu đang được chọn.
+-   **Taglibs:** Đảm bảo các `taglib` cần thiết (`jakarta.tags.core` cho `<c:*>`, `http://java.sun.com/jsp/jstl/fmt` cho `<fmt:*>`) được khai báo đầy đủ trong cả `sidebar.jsp` và các file JSP nhúng nó.
+-   **Lợi ích:** Dễ dàng thêm, sửa, xóa mục menu từ một nơi duy nhất.
+
+---
+
+## 5. 🛒 CHỨC NĂNG ĐẶT TOUR (Booking) & REVIEW TOUR (User Side)
+
+### 5.1. Chức năng Đặt Tour (User Side)
+
+#### a. Trang Booking chuyên biệt (`user/booking/index.jsp`)
+-   **Giao diện:** Thiết kế lại form đặt tour theo template `booking.html` để có trải nghiệm người dùng tốt hơn so với form nhỏ trên trang chi tiết tour.
+-   **Luồng:** Nút "Tiến Hành Đặt Tour" trên trang chi tiết tour sẽ điều hướng người dùng đến trang này (`/booking-page?id=...`).
+-   **Backend (`BookingPageServlet`):** Xử lý request `/booking-page`, lấy thông tin `Tour` từ DB và truyền vào `booking/index.jsp`.
+
+#### b. Chọn Loại Phòng & Tính toán giá
+-   **Frontend (`booking/index.jsp`):**
+    -   Thêm dropdown `select` cho phép người dùng chọn loại phòng (Standard, Deluxe, Suite, Single).
+    -   Mỗi `<option>` có thuộc tính `data-surcharge` để lưu phụ phí phòng.
+    -   **JavaScript:** Viết script để lắng nghe sự kiện thay đổi của "Số lượng khách" và "Loại phòng".
+    -   **Tính toán Real-time:** Tổng tiền = (Giá Tour Cơ bản + Phụ phí phòng) * Số lượng khách. Kết quả được cập nhật ngay lập tức ở phần "Tóm Tắt Giá" bên phải.
+-   **Backend (`BookingServlet`):**
+    -   Nhận tham số `roomType` từ form.
+    -   Tính toán lại phụ phí và tổng tiền dựa trên `roomType` (để tránh Frontend gửi giá sai).
+    -   Lưu `roomType` và `paymentMethod` vào cột `Address` của `tb_Order` dưới dạng chuỗi ghi chú (ví dụ: "Địa chỉ... (Room: Deluxe, Payment: CreditCard)") do Database hiện tại chưa có cột riêng cho các thông tin này.
+
+#### c. Phương Thức Thanh Toán
+-   **Frontend (`booking/index.jsp`):**
+    -   Tích hợp giao diện tab "Credit/Debit card" và "Digital Payment" (Paypal) giống hệt template gốc.
+    -   Sử dụng một `input type="hidden"` (`id="paymentMethodInput"`) để lưu phương thức thanh toán được chọn. JavaScript sẽ cập nhật giá trị này khi người dùng chuyển đổi tab.
+    -   **Việt hóa:** Toàn bộ phần thanh toán được dịch sang tiếng Việt.
+-   **Backend (`BookingServlet`):** Nhận tham số `paymentMethod` và lưu vào `Address` của `tb_Order`.
+
+#### d. Cải thiện UX Form nhập liệu
+-   **Trường "Ngày Hết Hạn" (Expiry Date):**
+    -   Sử dụng JavaScript để tự động thêm dấu `/` sau khi người dùng nhập đủ 2 ký tự đầu tiên (MM).
+    -   Giới hạn độ dài tối đa là 5 ký tự (`MM/YY`).
+-   **Trường "Mã Bảo Mật" (CVC/CVV):**
+    -   Giới hạn tối đa 3 ký tự.
+    -   Chỉ cho phép nhập liệu là số.
+-   **Khắc phục lỗi form submit:** Xóa đoạn JavaScript trong `main.js` của template gây chặn submit tất cả các form (thường là code demo).
+-   **Khắc phục lỗi Truncate Code:** Rút gọn mã đơn hàng (`ORD` + 6 chữ số cuối của timestamp) để đảm bảo độ dài không vượt quá giới hạn của cột `Code` trong `tb_Order` (`nchar(10)`).
+
+### 5.2. Chức năng Đánh giá Tour (User Side)
+
+#### a. Trang Chi Tiết Tour (`user/tour/detail.jsp`)
+-   **Bản đồ (Map):** Tích hợp Google Maps iframe.
+-   **Hiển thị đánh giá:**
+    -   **Backend (`TourDetailServlet`):**
+        -   Sử dụng `dal.user.TourReviewDAO` để lấy danh sách đánh giá (`List<TourReview>`) cho tour hiện tại.
+        -   Tính toán điểm đánh giá trung bình.
+        -   Truyền danh sách đánh giá và điểm trung bình vào request để hiển thị trên JSP.
+    -   **Frontend (`detail.jsp`):**
+        -   Sử dụng `<c:forEach>` để lặp và hiển thị từng đánh giá.
+        -   **Logic Avatar/Tên:**
+            -   Nếu `review.name` rỗng/null, hiển thị "Ẩn Danh".
+            -   Avatar mặc định cho ẩn danh: `reviewer/avatar-1.jpg`.
+            -   Xử lý đường dẫn ảnh avatar linh hoạt (URL đầy đủ hoặc tên file cục bộ).
+            -   Cập nhật kích thước avatar hiển thị (90x100px) và layout để tên/ngày tháng không bị chèn.
+
+#### b. Form Gửi Đánh Giá
+-   **Frontend (`detail.jsp`):**
+    -   Thêm form "Viết Đánh Giá" với các trường: Tên, Email, Nội dung, và **chọn số sao**.
+    -   **Star Rating Widget:** Thay thế dropdown chọn sao bằng giao diện 5 ngôi sao tương tác (dùng FontAwesome và JavaScript). Người dùng có thể click hoặc hover để chọn số sao.
+-   **Backend (`TourDetailServlet` - doPost):**
+    -   Nhận các tham số `tourId`, `name`, `email`, `detail`, `star` từ form.
+    -   Nếu `name` rỗng/null, đặt `name` là "Ẩn Danh" và gán avatar mặc định (`reviewer/avatar-1.jpg`).
+    -   Sử dụng `dal.user.TourReviewDAO.insertReview()` để lưu đánh giá vào `tb_TourReview`.
+    -   Redirect lại trang chi tiết tour để hiển thị đánh giá mới và tránh lỗi resubmit form.
+
+---
+
+## 6. 🗄️ QUẢN LÝ ĐƠN HÀNG (Admin)
+
+### Kiến Trúc & Luồng
+-   **Models mở rộng:** `model.Order.java` và `model.OrderDetail.java` được bổ sung các trường phụ trợ (`statusName`, `tourName`, `image`) để dễ dàng hiển thị dữ liệu JOIN từ các bảng khác mà không cần sửa cấu trúc Database. Khắc phục lỗi thiếu `import java.util.List;`.
+-   **DAO:** `dal.admin.OrderDAO.java` chứa các phương thức:
+    -   `getAllOrders()`: Lấy danh sách Order với tên trạng thái.
+    -   `getOrderById(int orderId)`: Lấy chi tiết Order bao gồm cả OrderDetail và thông tin Tour liên quan.
+    -   `updateOrderStatus(int orderId, int statusId)`: Cập nhật trạng thái đơn hàng.
+    -   `getAllOrderStatuses()`: Lấy danh sách các trạng thái Order có sẵn.
+-   **Servlet:** `controller.admin.OrderServlet.java` (đổi tên từ OrderController để tuân thủ quy ước đặt tên)
+    -   Xử lý `GET /admin/orders` (hiển thị danh sách hoặc chi tiết).
+    -   Xử lý `POST /admin/orders` (cập nhật trạng thái đơn hàng).
+-   **Views:**
+    -   `src/main/webapp/admin/quanlydonhang/index.jsp`: Hiển thị danh sách đơn hàng trong bảng DataTables (WowDash template) với thông tin cơ bản, trạng thái màu sắc và nút "Xem chi tiết".
+    -   `src/main/webapp/admin/quanlydonhang/detail.jsp`: Hiển thị chi tiết đơn hàng, thông tin khách hàng, tour đã đặt và form cập nhật trạng thái sử dụng dropdown.
+
+---

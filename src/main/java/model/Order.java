@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Order {
     private int orderId;
@@ -138,4 +139,12 @@ public class Order {
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
+    
+    private String statusName;
+    public String getStatusName() { return statusName; }
+    public void setStatusName(String statusName) { this.statusName = statusName; }
+
+    private List<OrderDetail> orderDetails;
+    public List<OrderDetail> getOrderDetails() { return orderDetails; }
+    public void setOrderDetails(List<OrderDetail> orderDetails) { this.orderDetails = orderDetails; }
 }

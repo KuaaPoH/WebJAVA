@@ -31,6 +31,9 @@ public class BookingServlet extends HttpServlet {
             String phone = request.getParameter("phone");
             int guests = Integer.parseInt(request.getParameter("guests"));
             String dateStr = request.getParameter("date");
+            String address = request.getParameter("address");
+            String roomType = request.getParameter("roomType");
+            String paymentMethod = request.getParameter("paymentMethod");
             
             // 2. Lấy thông tin tour để tính giá
             TourDAO tourDAO = new TourDAO();
@@ -42,7 +45,20 @@ public class BookingServlet extends HttpServlet {
             }
             
             // Tính giá (ưu tiên giá Sale)
-            int pricePerPerson = (tour.getPriceSale() > 0) ? tour.getPriceSale() : tour.getPrice();
+            int basePrice = (tour.getPriceSale() > 0) ? tour.getPriceSale() : tour.getPrice();
+            
+            // Tính phụ phí phòng
+            int roomSurcharge = 0;
+            if (roomType != null) {
+                switch (roomType) {
+                    case "Deluxe": roomSurcharge = 500000; break;
+                    case "Suite": roomSurcharge = 1000000; break;
+                    case "Single": roomSurcharge = 200000; break;
+                    default: roomSurcharge = 0;
+                }
+            }
+            
+            int pricePerPerson = basePrice + roomSurcharge;
             int totalAmount = pricePerPerson * guests;
             
             // Parse ngày khởi hành
@@ -55,18 +71,22 @@ public class BookingServlet extends HttpServlet {
 
             // 3. Tạo Order Object
             Order order = new Order();
-            order.setCode("ORD" + System.currentTimeMillis()); // Mã đơn hàng đơn giản
+            // Generate short code: ORD + last 6 digits of timestamp (total 9 chars) to fit nchar(10)
+            String orderCode = "ORD" + (System.currentTimeMillis() % 1000000);
+            order.setCode(orderCode);
             order.setCustomerName(fullname);
             order.setEmail(email);
             order.setPhone(phone);
-            order.setAddress(""); // Tạm để trống hoặc thêm trường địa chỉ vào form nếu cần
+            // Lưu loại phòng và phương thức thanh toán vào địa chỉ
+            String note = address + " (Room: " + roomType + ", Payment: " + paymentMethod + ")";
+            order.setAddress(note);
             order.setQuanlity(guests);
             order.setTotalAmount(totalAmount);
             
             // 4. Tạo OrderDetail Object
             OrderDetail detail = new OrderDetail();
             detail.setTourId(tourId);
-            detail.setPrice(pricePerPerson);
+            detail.setPrice(pricePerPerson); // Lưu giá thực tế đã cộng phụ phí
             detail.setQuantity(guests);
             detail.setDepartureDate(departureDate);
             
@@ -85,7 +105,8 @@ public class BookingServlet extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("home");
+            request.setAttribute("error", "Lỗi xử lý: " + e.getMessage());
+            request.getRequestDispatcher("tour-detail?id=" + request.getParameter("tourId")).forward(request, response);
         }
     }
 }

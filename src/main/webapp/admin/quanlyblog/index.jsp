@@ -10,7 +10,7 @@
     <title>Quản Lý Blog</title>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/images/favicon.png" sizes="16x16">
     <!-- google fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=re" rel="stylesheet">
     <!-- remix icon font css  -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/remixicon.css">
     <!-- Data Table css -->
@@ -23,57 +23,9 @@
 
 <body class="dark:bg-neutral-800 bg-neutral-100 dark:text-white">
 
-    <!-- ..::  Sidebar Start ::.. -->
-    <aside class="sidebar">
-        <button type="button" class="sidebar-close-btn !mt-4">
-            <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
-        </button>
-        <div>
-            <a href="${pageContext.request.contextPath}/admin/quanlytour" class="sidebar-logo">
-                <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="site logo" class="light-logo">
-                <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" alt="site logo" class="dark-logo">
-                <img src="${pageContext.request.contextPath}/assets/images/logo-icon.png" alt="site logo" class="logo-icon">
-            </a>
-        </div>
-        <div class="sidebar-menu-area">
-            <ul class="sidebar-menu" id="sidebar-menu">
-                <li>
-                    <a href="${pageContext.request.contextPath}/admin">
-                        <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
-                        <span>Trang Chủ</span>
-                    </a>
-                </li>
-                
-                <li class="sidebar-menu-group-title">Quản Lý</li>
-                
-                <li>
-                    <a href="${pageContext.request.contextPath}/admin/quanlytour">
-                        <iconify-icon icon="mingcute:storage-line" class="menu-icon"></iconify-icon>
-                        <span>Quản Lý Tour</span>
-                    </a>
-                </li>
-                <li class="active">
-                    <a href="${pageContext.request.contextPath}/admin/quanlyblog">
-                        <iconify-icon icon="icon-park-outline:writing-fluently" class="menu-icon"></iconify-icon>
-                        <span>Quản Lý Blog</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/admin/quanlylienhe">
-                        <iconify-icon icon="fluent:contact-card-20-regular" class="menu-icon"></iconify-icon>
-                        <span>Quản Lý Liên Hệ</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/admin/quanlymenu">
-                        <iconify-icon icon="mingcute:menu-line" class="menu-icon"></iconify-icon>
-                        <span>Quản Lý Menu</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </aside>
-    <!-- ..::  Sidebar End ::.. -->
+    <%@include file="/admin/components/sidebar.jsp" %>
+
+
 
     <main class="dashboard-main">
 
