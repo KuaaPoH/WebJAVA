@@ -8,7 +8,16 @@ public class Order {
     private String customerName;
     private String phone;
     private String address;
+    private String email;
     private int totalAmount;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
     private int quanlity; // Note: 'quanlity' might be a typo for 'quantity' in the DB
     private int orderStatusId;
     private Date createdDate;

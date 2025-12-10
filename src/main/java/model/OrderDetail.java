@@ -1,21 +1,33 @@
 package model;
 
+import java.util.Date;
+
 public class OrderDetail {
     private int orderDetailId;
     private int orderId;
     private int tourId;
     private double price; // decimal(18, 0) fits in double
     private int quantity;
+    private Date departureDate;
 
     public OrderDetail() {
     }
 
-    public OrderDetail(int orderDetailId, int orderId, int tourId, double price, int quantity) {
+    public OrderDetail(int orderDetailId, int orderId, int tourId, double price, int quantity, Date departureDate) {
         this.orderDetailId = orderDetailId;
         this.orderId = orderId;
         this.tourId = tourId;
         this.price = price;
         this.quantity = quantity;
+        this.departureDate = departureDate;
+    }
+
+    public Date getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(Date departureDate) {
+        this.departureDate = departureDate;
     }
 
     public int getOrderDetailId() {
