@@ -56,11 +56,29 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] Tách riêng `login.jsp` và `register.jsp` với giao diện chuyên nghiệp.
         -   [x] Thông báo lỗi/thành công rõ ràng.
     -   [x] Đăng nhập / Đăng ký thành viên: Hoàn thiện chức năng đăng nhập, đăng ký, quản lý hồ sơ.
+    -   [x] **Chức năng Tìm kiếm & Lọc Tour:**
+        -   [x] Sidebar lọc theo danh mục, từ khóa và khoảng giá.
+        -   [x] Pagination (Phân trang) cho danh sách tour.
+    -   [x] **Trang Hồ Sơ Cá Nhân (Profile):**
+        -   [x] Tạo `controller.user.ProfileServlet` và giao diện `webapp/user/profile.jsp`.
+        -   [x] Hiển thị Lịch sử đơn hàng và Thông tin cá nhân.
+        -   [x] **Quản lý Avatar:** Cho phép upload, đổi avatar (Lưu kép + Fallback).
+        -   [x] **Chi Tiết Đơn Hàng:** Xem chi tiết tour, giá tiền từng món (`/order-detail`).
+        -   [x] **Yêu Cầu Hủy:** Cho phép user gửi yêu cầu hủy đơn (Status ID 1008).
+    -   [x] **Hệ Thống Session (Nâng Cao):**
+        -   [x] Chế độ chạy song song (Dual Session): Admin và User login cùng lúc trên 1 trình duyệt.
+        -   [x] Tách biệt `LogoutServlet` xử lý theo role.
+    -   [ ] **Quản Lý Người Dùng (Admin):**
+        -   [x] Tạo `dal.admin.CustomerDAO` để lấy danh sách và cập nhật trạng thái.
+        -   [x] Tạo `controller.admin.CustomerServlet` để xử lý danh sách và khóa/mở khóa.
+        -   [x] Tạo giao diện `webapp/admin/quanlynguoidung/index.jsp` để hiển thị và thao tác.
+        -   [x] Cập nhật sidebar Admin.
+        -   [ ] **Ghi chú:** Đang có lỗi phát sinh trong chức năng này, cần kiểm tra và khắc phục.
 
 ### ⚠️ Đang thực hiện
-    -   [ ] **Chức năng Tìm kiếm & Lọc Tour:**
-        -   [ ] Sidebar lọc theo khoảng giá, địa điểm.
-        -   [ ] Pagination (Phân trang) cho danh sách tour.
+    -   [ ] **Quản Lý Đánh Giá (Reviews):**
+        -   [ ] Tạo `controller.admin.ReviewServlet`: Duyệt/ẩn bình luận.
+        -   [ ] Tạo giao diện `webapp/admin/quanlydanhgia/index.jsp`.
 
 ---
 
@@ -81,5 +99,25 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
     -   [ ] Tạo giao diện `webapp/admin/quanlydanhgia/index.jsp`.
 -   [ ] **Quản Lý Danh Mục Tour:**
     -   [ ] CRUD Danh mục tour.
--   [ ] **Quản Lý Người Dùng:**
-    -   [ ] Quản lý danh sách khách hàng và nhân viên.
+
+---
+
+## 4. Gợi Ý Phát Triển Tương Lai (Wishlist)
+
+Dưới đây là các tính năng được đề xuất để nâng cấp hệ thống trong các giai đoạn tiếp theo:
+
+1.  **📧 Quên Mật Khẩu (Forgot Password):**
+    -   Cho phép người dùng reset mật khẩu thông qua Email xác thực.
+2.  **🎟️ Mã Giảm Giá (Voucher/Coupon):**
+    -   Hệ thống quản lý mã giảm giá cho Admin.
+    -   Cho phép User áp dụng mã giảm giá tại bước thanh toán.
+3.  **💳 Thanh Toán Online (Payment Gateway):**
+    -   Tích hợp cổng thanh toán thực tế (VNPAY, Momo, PayPal API) để xử lý giao dịch tự động.
+4.  **💬 Chat Trực Tuyến (Live Chat):**
+    -   Tích hợp widget chat (Facebook Messenger, Tawk.to) để hỗ trợ khách hàng realtime.
+5.  **📨 Email Automation:**
+    -   Tự động gửi email xác nhận khi: Đăng ký thành công, Đặt tour thành công, Đơn hàng bị hủy, v.v.
+6.  **📊 Báo Cáo & Xuất File:**
+    -   Cho phép Admin xuất báo cáo doanh thu, danh sách đơn hàng ra file Excel hoặc PDF.
+7.  **🌍 Đa Ngôn Ngữ (Multi-language):**
+    -   Hỗ trợ chuyển đổi ngôn ngữ Tiếng Việt / Tiếng Anh cho toàn bộ trang web.

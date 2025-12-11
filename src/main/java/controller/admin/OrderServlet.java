@@ -21,8 +21,20 @@ public class OrderServlet extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
 
         if (action == null || action.equals("list")) {
-            List<Order> orders = orderDAO.getAllOrders();
+            // Lọc theo trạng thái
+            String statusStr = request.getParameter("status");
+            Integer statusId = null;
+            if (statusStr != null && !statusStr.isEmpty()) {
+                try {
+                    statusId = Integer.parseInt(statusStr);
+                } catch (NumberFormatException e) {
+                    // Ignore invalid status param
+                }
+            }
+
+            List<Order> orders = orderDAO.getAllOrders(statusId);
             request.setAttribute("orders", orders);
+            request.setAttribute("currentStatus", statusId); // Để highlight button filter
             request.getRequestDispatcher("/admin/quanlydonhang/index.jsp").forward(request, response);
         } else if (action.equals("view")) {
             int orderId = Integer.parseInt(request.getParameter("id"));

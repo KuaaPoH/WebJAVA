@@ -1,6 +1,7 @@
 package dal.admin;
 
 import dal.DBContext;
+import model.Order;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +12,52 @@ import java.util.List;
 import java.util.Map;
 
 public class DashboardDAO extends DBContext {
+
+    // Đếm đơn hàng theo trạng thái cụ thể
+    public int countOrdersByStatus(int statusId) {
+        String sql = "SELECT COUNT(*) FROM tb_Order WHERE OrderStatusId = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, statusId);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("DashboardDAO countOrdersByStatus: " + e);
+        }
+        return 0;
+    }
+
+    // Lấy danh sách đơn hàng mới nhất
+    public List<Order> getRecentOrders(int top) {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT TOP (?) o.*, os.Name AS OrderStatusName " +
+                     "FROM tb_Order o " +
+                     "JOIN tb_OrderStatus os ON o.OrderStatusId = os.OrderStatusId " +
+                     "ORDER BY o.CreatedDate DESC";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, top);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getInt("OrderId"));
+                order.setCode(rs.getString("Code"));
+                order.setCustomerName(rs.getString("CustomerName"));
+                order.setPhone(rs.getString("Phone"));
+                order.setTotalAmount(rs.getInt("TotalAmount"));
+                order.setQuanlity(rs.getInt("Quanlity"));
+                order.setOrderStatusId(rs.getInt("OrderStatusId"));
+                order.setStatusName(rs.getString("OrderStatusName"));
+                order.setCreatedDate(rs.getTimestamp("CreatedDate"));
+                list.add(order);
+            }
+        } catch (SQLException e) {
+            System.out.println("DashboardDAO getRecentOrders: " + e);
+        }
+        return list;
+    }
 
     public List<Double> getMonthlyRevenue(int year) {
         List<Double> list = new ArrayList<>();

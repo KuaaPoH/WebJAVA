@@ -87,6 +87,30 @@
                             </a> -->
                         </div>
                         <div class="card-body">
+                            <!-- Filter Buttons -->
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <a href="${pageContext.request.contextPath}/admin/orders?action=list" 
+                                   class="px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${empty currentStatus ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300'}">
+                                    Tất cả
+                                </a>
+                                <a href="${pageContext.request.contextPath}/admin/orders?action=list&status=5" 
+                                   class="px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${currentStatus == 5 ? 'bg-warning-500 text-white border-warning-500' : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300'}">
+                                    Chờ xác nhận
+                                </a>
+                                <a href="${pageContext.request.contextPath}/admin/orders?action=list&status=1008" 
+                                   class="px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${currentStatus == 1008 ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-purple-600 border-purple-200 hover:bg-purple-50 dark:bg-neutral-800 dark:border-neutral-600 dark:text-purple-400'}">
+                                    Yêu cầu hủy
+                                </a>
+                                <a href="${pageContext.request.contextPath}/admin/orders?action=list&status=6" 
+                                   class="px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${currentStatus == 6 ? 'bg-success-600 text-white border-success-600' : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300'}">
+                                    Đã xác nhận
+                                </a>
+                                <a href="${pageContext.request.contextPath}/admin/orders?action=list&status=7" 
+                                   class="px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${currentStatus == 7 ? 'bg-danger-600 text-white border-danger-600' : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300'}">
+                                    Đã hủy
+                                </a>
+                            </div>
+
                             <table id="selection-table" class="table border border-neutral-200 dark:border-neutral-600 rounded-lg border-separate">
                                 <thead>
                                     <tr>
@@ -118,6 +142,7 @@
                                                         <c:when test="${order.orderStatusId == 5}">bg-warning-100 text-warning-600 dark:bg-warning-600/25 dark:text-warning-400</c:when>
                                                         <c:when test="${order.orderStatusId == 6}">bg-success-100 text-success-600 dark:bg-success-600/25 dark:text-success-400</c:when>
                                                         <c:when test="${order.orderStatusId == 7}">bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400</c:when>
+                                                        <c:when test="${order.orderStatusId == 1008}">bg-purple-100 text-purple-600 dark:bg-purple-600/25 dark:text-purple-400</c:when>
                                                         <c:otherwise>bg-neutral-100 text-neutral-600 dark:bg-neutral-600/25 dark:text-neutral-400</c:otherwise>
                                                     </c:choose>
                                                     px-4 py-1 rounded-full font-medium text-sm">
@@ -131,25 +156,42 @@
                                                         <iconify-icon icon="solar:eye-bold"></iconify-icon>
                                                     </a>
                                                     
-                                                    <!-- Approve Button (Only if ID != 6 (Confirmed) and ID != 7 (Cancelled)) -->
-                                                    <c:if test="${order.orderStatusId != 6 && order.orderStatusId != 7}">
-                                                        <a href="${pageContext.request.contextPath}/admin/orders?action=updateStatus&orderId=${order.orderId}&statusId=6&from=list" 
-                                                           class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center" 
-                                                           title="Duyệt đơn hàng"
-                                                           onclick="return confirm('Xác nhận duyệt đơn hàng này?');">
-                                                            <iconify-icon icon="mingcute:check-fill"></iconify-icon>
-                                                        </a>
-                                                    </c:if>
-
-                                                    <!-- Reject Button (Only if ID != 7 (Cancelled)) -->
-                                                    <c:if test="${order.orderStatusId != 7}">
-                                                        <a href="${pageContext.request.contextPath}/admin/orders?action=updateStatus&orderId=${order.orderId}&statusId=7&from=list" 
-                                                           class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center" 
-                                                           title="Từ chối đơn hàng"
-                                                           onclick="return confirm('Xác nhận từ chối đơn hàng này?');">
-                                                            <iconify-icon icon="mingcute:close-fill"></iconify-icon>
-                                                        </a>
-                                                    </c:if>
+                                                    <c:choose>
+                                                        <%-- CASE: Yêu cầu hủy (1008) --%>
+                                                        <c:when test="${order.orderStatusId == 1008}">
+                                                            <!-- Chấp nhận hủy (Chuyển sang ID 7 - Đã hủy) -->
+                                                            <a href="${pageContext.request.contextPath}/admin/orders?action=updateStatus&orderId=${order.orderId}&statusId=7&from=list" 
+                                                               class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center" 
+                                                               title="Chấp nhận yêu cầu hủy"
+                                                               onclick="return confirm('Chấp nhận hủy đơn hàng này theo yêu cầu của khách?');">
+                                                                <iconify-icon icon="mingcute:check-fill"></iconify-icon>
+                                                            </a>
+                                                            
+                                                            <!-- Từ chối hủy (Khôi phục về ID 5 - Chờ xác nhận) -->
+                                                            <a href="${pageContext.request.contextPath}/admin/orders?action=updateStatus&orderId=${order.orderId}&statusId=5&from=list" 
+                                                               class="w-8 h-8 bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400 rounded-full inline-flex items-center justify-center" 
+                                                               title="Từ chối hủy (Khôi phục đơn)"
+                                                               onclick="return confirm('Từ chối yêu cầu hủy và khôi phục đơn hàng về trạng thái Chờ?');">
+                                                                <iconify-icon icon="mingcute:back-2-fill"></iconify-icon>
+                                                            </a>
+                                                        </c:when>
+                                                        
+                                                        <%-- CASE: Các trạng thái bình thường (Chưa hoàn thành) --%>
+                                                        <c:when test="${order.orderStatusId != 6 && order.orderStatusId != 7}">
+                                                            <a href="${pageContext.request.contextPath}/admin/orders?action=updateStatus&orderId=${order.orderId}&statusId=6&from=list" 
+                                                               class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center" 
+                                                               title="Duyệt đơn hàng"
+                                                               onclick="return confirm('Xác nhận duyệt đơn hàng này?');">
+                                                                <iconify-icon icon="mingcute:check-fill"></iconify-icon>
+                                                            </a>
+                                                            <a href="${pageContext.request.contextPath}/admin/orders?action=updateStatus&orderId=${order.orderId}&statusId=7&from=list" 
+                                                               class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center" 
+                                                               title="Hủy đơn hàng"
+                                                               onclick="return confirm('Xác nhận hủy đơn hàng này?');">
+                                                                <iconify-icon icon="mingcute:close-fill"></iconify-icon>
+                                                            </a>
+                                                        </c:when>
+                                                    </c:choose>
                                                 </div>
                                             </td>
                                         </tr>

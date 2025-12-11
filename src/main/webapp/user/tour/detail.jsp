@@ -188,12 +188,18 @@
                                     <div class="comment-box">
                                         <div class="comment-image">
                                             <c:choose>
+                                                <%-- Trường hợp ảnh là URL (Google/Facebook login sau này) --%>
                                                 <c:when test="${r.image != null && r.image.startsWith('http')}">
                                                     <img src="${r.image}" alt="avatar" style="width: 90px; height: 100px; object-fit: cover;" onerror="this.src='${pageContext.request.contextPath}/assets/travelin/images/reviewer/avatar-1.jpg'">
                                                 </c:when>
+                                                <%-- Trường hợp ảnh upload (Local) --%>
                                                 <c:when test="${r.image != null && not empty r.image}">
-                                                     <img src="${pageContext.request.contextPath}/assets/travelin/images/${r.image}" alt="avatar" style="width: 90px; height: 100px; object-fit: cover;" onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/travelin/images/reviewer/avatar-1.jpg';">
+                                                     <img src="${pageContext.request.contextPath}/assets/images/users/${r.image}" 
+                                                          alt="avatar" 
+                                                          style="width: 90px; height: 100px; object-fit: cover;" 
+                                                          onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/travelin/images/reviewer/avatar-1.jpg';">
                                                 </c:when>
+                                                <%-- Mặc định --%>
                                                 <c:otherwise>
                                                     <img src="${pageContext.request.contextPath}/assets/travelin/images/reviewer/avatar-1.jpg" alt="avatar" style="width: 90px; height: 100px; object-fit: cover;">
                                                 </c:otherwise>

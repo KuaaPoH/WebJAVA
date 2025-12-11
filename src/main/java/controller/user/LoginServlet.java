@@ -12,31 +12,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login", "/logout"})
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getServletPath();
-        if ("/logout".equals(action)) {
-            HttpSession session = request.getSession();
-            session.invalidate();
-            response.sendRedirect("login");
-            return;
-        }
         
         // Nếu đã đăng nhập rồi thì chuyển hướng
         HttpSession session = request.getSession(false);
         if (session != null) {
-            if (session.getAttribute("admin") != null) {
-                response.sendRedirect("admin");
-                return;
-            }
-            if (session.getAttribute("user") != null) {
-                response.sendRedirect("home");
-                return;
-            }
+ 
         }
         
         // Truyền các thông báo từ RegisterServlet nếu có

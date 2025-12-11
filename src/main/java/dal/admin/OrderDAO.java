@@ -12,15 +12,24 @@ import java.util.List;
 
 public class OrderDAO extends DBContext {
 
-    // Lấy tất cả đơn hàng cho Admin (có thêm thông tin trạng thái)
-    public List<Order> getAllOrders() {
+    // Lấy danh sách đơn hàng (có thể lọc theo trạng thái)
+    public List<Order> getAllOrders(Integer statusId) {
         List<Order> list = new ArrayList<>();
         String sql = "SELECT o.*, os.Name AS OrderStatusName " +
                      "FROM tb_Order o " +
-                     "JOIN tb_OrderStatus os ON o.OrderStatusId = os.OrderStatusId " +
-                     "ORDER BY o.CreatedDate DESC";
+                     "JOIN tb_OrderStatus os ON o.OrderStatusId = os.OrderStatusId ";
+        
+        if (statusId != null) {
+            sql += "WHERE o.OrderStatusId = ? ";
+        }
+        
+        sql += "ORDER BY o.CreatedDate DESC";
+        
         try {
             PreparedStatement st = connection.prepareStatement(sql);
+            if (statusId != null) {
+                st.setInt(1, statusId);
+            }
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Order order = new Order();

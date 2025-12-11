@@ -12,7 +12,12 @@ public class TourReviewDAO extends DBContext {
 
     public List<TourReview> getReviewsByTourId(int tourId) {
         List<TourReview> list = new ArrayList<>();
-        String sql = "SELECT * FROM tb_TourReview WHERE ProductId = ? AND IsActive = 1 ORDER BY CreatedDate DESC";
+        // JOIN để lấy Avatar mới nhất từ bảng Customer nếu Email trùng khớp
+        String sql = "SELECT r.*, c.Avatar as UserAvatar " +
+                     "FROM tb_TourReview r " +
+                     "LEFT JOIN tb_Customer c ON r.Email = c.Email " +
+                     "WHERE r.ProductId = ? AND r.IsActive = 1 " +
+                     "ORDER BY r.CreatedDate DESC";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setInt(1, tourId);
@@ -28,7 +33,17 @@ public class TourReviewDAO extends DBContext {
                 r.setStar(rs.getInt("Star"));
                 r.setProductId(rs.getInt("ProductId"));
                 r.setActive(rs.getBoolean("IsActive"));
-                r.setImage(rs.getString("Image"));
+                
+                // Ưu tiên lấy Avatar từ bảng Customer (UserAvatar), nếu không có thì lấy từ bảng Review (Image)
+                String userAvatar = rs.getString("UserAvatar");
+                String reviewImage = rs.getString("Image");
+                
+                if (userAvatar != null && !userAvatar.isEmpty()) {
+                    r.setImage(userAvatar);
+                } else {
+                    r.setImage(reviewImage);
+                }
+                
                 list.add(r);
             }
         } catch (SQLException e) {

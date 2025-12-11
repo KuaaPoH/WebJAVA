@@ -304,7 +304,73 @@ Thống nhất sử dụng bộ ID cố định cho quy trình đơn hàng:
 -   **ID 7:** Đã hủy (Cancelled) - Admin hoặc khách hủy.
 
 **Cập nhật Code:**
--   Trong `dal.user.OrderDAO`: Xóa logic "tự động tạo status". Thay vào đó, gán cứng `statusId = 5` khi insert đơn hàng mới.
--   **Tool Fix DB:** Tạo phương thức `fixStatusNamesToVietnamese()` trong `OrderDAO` (kích hoạt qua action `fix_db` của Admin) để chuẩn hóa tên trạng thái trong Database sang tiếng Việt.
+    -   Thay vào đó, gán cứng `statusId = 5` khi insert đơn hàng mới.
+    -   **Tool Fix DB:** Tạo phương thức `fixStatusNamesToVietnamese()` trong `OrderDAO` (kích hoạt qua action `fix_db` của Admin) để chuẩn hóa tên trạng thái trong Database sang tiếng Việt.
 
 ```
+
+---
+
+## 10. 🔄 CHẾ ĐỘ CHẠY SONG SONG (DUAL SESSION)
+
+### Vấn đề
+Mặc định, trình duyệt chia sẻ cùng một `JSESSIONID` cho các tab. Khi gọi `session.invalidate()` (đăng xuất), toàn bộ dữ liệu session bị xóa. Điều này khiến việc vừa đăng nhập Admin ở tab này, vừa test User ở tab kia là không thể (đăng xuất bên này sẽ bay luôn bên kia).
+
+### Giải pháp
+Xây dựng cơ chế quản lý Session theo vai trò (`Role-based Session Management`):
+
+1.  **Phân tách Attribute:**
+    *   Admin lưu trong `session.getAttribute("admin")`.
+    *   User lưu trong `session.getAttribute("user")`.
+
+2.  **LoginServlet (Điều chỉnh):**
+    *   Loại bỏ logic tự động chuyển hướng (auto-redirect) khi truy cập `/login`. Điều này cho phép User (đã login) vẫn có thể truy cập form login để đăng nhập thêm tài khoản Admin nếu muốn.
+
+3.  **LogoutServlet (Mới):**
+    *   Xử lý đăng xuất dựa trên tham số `role`.
+    *   `GET /logout?role=admin`: Chỉ thực hiện `session.removeAttribute("admin")`. Session của User vẫn giữ nguyên.
+    *   `GET /logout?role=user`: Chỉ thực hiện `session.removeAttribute("user")`. Session của Admin vẫn giữ nguyên.
+    *   Chỉ gọi `session.invalidate()` khi không còn role nào tồn tại trong session để dọn dẹp triệt để.
+
+---
+
+## 11. 🚫 QUY TRÌNH YÊU CẦU HỦY ĐƠN HÀNG
+
+### Logic Nghiệp Vụ
+Thay vì cho phép User tự ý hủy đơn hàng (xóa khỏi DB hoặc đổi ngay sang trạng thái Hủy), hệ thống áp dụng quy trình "Yêu Cầu - Phê Duyệt" để đảm bảo Admin nắm được thông tin và xử lý hoàn tiền (nếu có).
+
+### Quy ước ID Trạng Thái (Mở rộng)
+Ngoài 3 trạng thái cơ bản (5: Chờ, 6: Duyệt, 7: Hủy), hệ thống sử dụng thêm ID đặc biệt:
+-   **ID 1008:** Yêu Cầu Hủy (Request Cancel).
+
+### Luồng Xử Lý
+1.  **User:** Tại trang Chi tiết đơn hàng (`/order-detail`), nếu đơn đang ở trạng thái **Chờ (ID 5)**, nút "Yêu Cầu Hủy" sẽ hiện ra.
+2.  **Action:** Khi bấm, `OrderDetailServlet` cập nhật trạng thái đơn sang **1008**.
+3.  **Giao diện:** Badge trạng thái chuyển sang màu xanh dương (Info) với nội dung "Yêu cầu hủy" (hoặc tên tương ứng trong DB). Các nút thao tác bị ẩn đi để tránh spam.
+4.  **Admin:** Trong trang quản lý đơn hàng, Admin sẽ thấy trạng thái này và quyết định chuyển sang **Đã Hủy (ID 7)** hoặc **Từ chối (quay về ID 5/6)**.
+
+---
+
+## 12. 👤 QUẢN LÝ KHÁCH HÀNG (Admin)
+
+### Mục đích
+Cho phép quản trị viên xem danh sách khách hàng và thực hiện các hành động quản lý cơ bản như khóa/mở khóa tài khoản.
+
+### Chi tiết kỹ thuật
+
+1.  **DAO (`dal.admin.CustomerDAO`):**
+    *   `getAllCustomers()`: Truy vấn toàn bộ danh sách khách hàng từ bảng `tb_Customer`.
+    *   `updateStatus(int customerId, boolean isActive)`: Cập nhật trường `IsActive` của khách hàng trong database.
+
+2.  **Servlet (`controller.admin.CustomerServlet`):**
+    *   Xử lý đường dẫn `/admin/customers`.
+    *   Phương thức `doGet` lấy danh sách khách hàng và hiển thị ra giao diện `index.jsp`.
+    *   Xử lý các action `lock` và `unlock` để gọi `dao.updateStatus()` và chuyển hướng về trang danh sách.
+
+3.  **View (`admin/quanlynguoidung/index.jsp`):**
+    *   Sử dụng template bảng dữ liệu chuẩn của Admin.
+    *   Hiển thị các thông tin: ID, Avatar, Tên đăng nhập, Email, Số điện thoại, Trạng thái hoạt động.
+    *   **Trạng thái:** Dùng badge màu xanh lá cho "Đang hoạt động" và màu đỏ cho "Đã khóa".
+    *   **Hành động:** Cung cấp các nút "Khóa tài khoản" (icon khóa) và "Mở khóa tài khoản" (icon mở khóa) tương ứng với trạng thái hiện tại của người dùng. Các nút có `onclick` confirm để tránh thao tác nhầm lẫn.
+
+4.  **Tích hợp Sidebar:** Đã thêm mục "Quản Lý Khách Hàng" vào `admin/components/sidebar.jsp` để dễ dàng truy cập.

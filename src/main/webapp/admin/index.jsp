@@ -40,6 +40,7 @@
                 </div>
                 <div class="col-auto">
                     <div class="flex flex-wrap items-center gap-3">
+                        <span class="text-neutral-500 dark:text-neutral-400 font-medium">Xin chào, ${sessionScope.admin.username}!</span>
                         <button type="button" id="theme-toggle" class="w-10 h-10 bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-full flex justify-center items-center">
                             <span id="theme-toggle-dark-icon" class="hidden">
                                 <i class="ri-sun-line"></i>
@@ -49,9 +50,10 @@
                             </span>
                         </button>
                         
-                        <button data-dropdown-toggle="dropdownProfile" class="flex justify-center items-center rounded-full" type="button">
-                            <img src="${pageContext.request.contextPath}/assets/images/user.png" alt="image" class="w-10 h-10 object-fit-cover rounded-full">
+                        <button data-dropdown-toggle="dropdownProfile" data-dropdown-placement="bottom-end" class="flex justify-center items-center rounded-full" type="button">
+                            <img src="${pageContext.request.contextPath}/assets/images/users/${sessionScope.admin.image != null ? sessionScope.admin.image : 'default-admin.png'}" alt="admin avatar" class="w-10 h-10 object-fit-cover rounded-full" onerror="this.src='${pageContext.request.contextPath}/assets/images/user.png'">
                         </button>
+                        <%@include file="/admin/components/profile_dropdown.jsp" %>
                     </div>
                 </div>
             </div>
@@ -109,14 +111,14 @@
                     </div>
                 </div>
 
-                <!-- Widget 4: Contacts -->
+                <!-- Widget 4: Cancel Requests -->
                 <div class="card border-0 shadow-none bg-white dark:bg-neutral-800 rounded-lg p-5 flex items-center justify-between">
                     <div>
-                        <p class="text-neutral-500 dark:text-neutral-400 text-sm mb-1">Tin Nhắn Mới</p>
-                        <h4 class="text-2xl font-bold mb-0 text-neutral-800 dark:text-white">${newContacts}</h4>
+                        <p class="text-neutral-500 dark:text-neutral-400 text-sm mb-1">Yêu Cầu Hủy</p>
+                        <h4 class="text-2xl font-bold mb-0 text-neutral-800 dark:text-white">${cancelRequests}</h4>
                     </div>
                     <div class="w-12 h-12 rounded-full bg-danger-50 dark:bg-danger-600/10 flex items-center justify-center text-danger-600 dark:text-danger-400">
-                        <iconify-icon icon="fluent:chat-mail-20-regular" class="text-2xl"></iconify-icon>
+                        <iconify-icon icon="solar:bell-bing-bold-duotone" class="text-2xl"></iconify-icon>
                     </div>
                 </div>
             </div>
@@ -146,6 +148,59 @@
                             <div class="mt-4 text-center">
                                 <p class="text-neutral-500 dark:text-neutral-400 text-sm">Tỷ lệ đơn hàng theo trạng thái</p>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Orders Section -->
+            <div class="grid grid-cols-12 gap-6 mb-6">
+                <div class="col-span-12">
+                    <div class="card border-0 shadow-none bg-white dark:bg-neutral-800 rounded-lg h-full">
+                        <div class="card-header border-b border-neutral-200 dark:border-neutral-700 p-4 flex items-center justify-between">
+                            <h6 class="text-lg font-semibold mb-0 text-neutral-800 dark:text-white">Đơn Hàng Mới Nhất</h6>
+                            <a href="${pageContext.request.contextPath}/admin/orders" class="text-primary-600 hover:text-primary-700 font-medium text-sm">Xem tất cả</a>
+                        </div>
+                        <div class="card-body p-0 overflow-x-auto">
+                            <table class="table w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-neutral-50 dark:bg-neutral-700/30 border-b border-neutral-200 dark:border-neutral-700">
+                                        <th class="p-4 font-medium text-neutral-500 dark:text-neutral-300">Mã Đơn</th>
+                                        <th class="p-4 font-medium text-neutral-500 dark:text-neutral-300">Khách Hàng</th>
+                                        <th class="p-4 font-medium text-neutral-500 dark:text-neutral-300">Tổng Tiền</th>
+                                        <th class="p-4 font-medium text-neutral-500 dark:text-neutral-300">Ngày Đặt</th>
+                                        <th class="p-4 font-medium text-neutral-500 dark:text-neutral-300">Trạng Thái</th>
+                                        <th class="p-4 font-medium text-neutral-500 dark:text-neutral-300 text-center">Chi Tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${recentOrders}" var="order">
+                                        <tr class="border-b border-neutral-200 dark:border-neutral-700 last:border-0 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition">
+                                            <td class="p-4 font-medium dark:text-white">#${order.code}</td>
+                                            <td class="p-4 dark:text-white">${order.customerName}</td>
+                                            <td class="p-4 font-bold text-primary-600"><fmt:formatNumber value="${order.totalAmount}" pattern="#,###"/>₫</td>
+                                            <td class="p-4 text-neutral-500 dark:text-neutral-400"><fmt:formatDate value="${order.createdDate}" pattern="dd/MM/yyyy"/></td>
+                                            <td class="p-4">
+                                                <span class="px-3 py-1 rounded-full text-xs font-medium
+                                                    <c:choose>
+                                                        <c:when test="${order.orderStatusId == 5}">bg-warning-100 text-warning-600 dark:bg-warning-600/25 dark:text-warning-400</c:when>
+                                                        <c:when test="${order.orderStatusId == 6}">bg-success-100 text-success-600 dark:bg-success-600/25 dark:text-success-400</c:when>
+                                                        <c:when test="${order.orderStatusId == 7}">bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400</c:when>
+                                                        <c:when test="${order.orderStatusId == 1008}">bg-purple-100 text-purple-600 dark:bg-purple-600/25 dark:text-purple-400</c:when>
+                                                        <c:otherwise>bg-neutral-100 text-neutral-600 dark:bg-neutral-600/25 dark:text-neutral-400</c:otherwise>
+                                                    </c:choose>">
+                                                    ${order.statusName}
+                                                </span>
+                                            </td>
+                                            <td class="p-4 text-center">
+                                                <a href="${pageContext.request.contextPath}/admin/orders?action=view&id=${order.orderId}" class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition dark:bg-primary-600/10 dark:text-primary-400 dark:hover:bg-primary-600/20" title="Xem chi tiết">
+                                                    <iconify-icon icon="solar:eye-bold"></iconify-icon>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -300,12 +355,12 @@
                 var orderOptions = {
                     series: ${orderData},
                     labels: ${orderLabels},
+                    colors: ${orderColors}, // Use dynamic colors
                     chart: {
                         type: 'donut',
                         height: 300,
                         fontFamily: 'Inter, sans-serif'
                     },
-                    // colors: ['#22c55e', '#eab308', '#ef4444'], // Let ApexCharts pick colors automatically
                     plotOptions: {
                         pie: {
                             donut: {

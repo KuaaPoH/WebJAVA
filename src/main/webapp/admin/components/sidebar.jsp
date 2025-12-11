@@ -41,6 +41,12 @@
                     <span>Quản Lý Đơn Hàng</span>
                 </a>
             </li>
+            <li class="${request.getRequestURI().contains("/admin/customers") ? "active" : ""}">
+                <a href="${pageContext.request.contextPath}/admin/customers">
+                    <iconify-icon icon="solar:user-bold" class="menu-icon"></iconify-icon>
+                    <span>Quản Lý Khách Hàng</span>
+                </a>
+            </li>
             <li class="${request.getRequestURI().contains("/admin/quanlylienhe") ? "active" : ""}">
                 <a href="${pageContext.request.contextPath}/admin/quanlylienhe">
                     <iconify-icon icon="fluent:contact-card-20-regular" class="menu-icon"></iconify-icon>

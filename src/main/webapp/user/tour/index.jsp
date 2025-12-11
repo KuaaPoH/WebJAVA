@@ -1,14 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="vi">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>Danh Sách Tour - Travelin</title>
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/assets/travelin/images/favicon.png">
@@ -28,78 +26,9 @@
 
 <body>
 
-    <!-- Preloader -->
-    <div id="preloader">
-        <div id="status"></div>
-    </div>
-    <!-- Preloader Ends -->
-
-    <!-- header starts -->
-    <header class="main_header_area">
-        <div class="header-content py-1 bg-theme">
-            <div class="container d-flex align-items-center justify-content-between">
-                <div class="links">
-                    <ul>
-                        <li><a href="#" class="white"><i class="icon-calendar white"></i> Thứ Năm, 10 Tháng 12, 2025</a>
-                        </li>
-                        <li><a href="#" class="white"><i class="icon-location-pin white"></i> Hà Nội, Việt Nam</a>
-                        </li>
-                        <li><a href="#" class="white"><i class="icon-clock white"></i> T2-T6: 10 AM – 5 PM</a></li>
-                    </ul>
-                </div>
-                <div class="links float-right">
-                    <ul>
-                        <li><a href="#" class="white"><i class="fab fa-facebook" aria-hidden="true"></i></a></li>
-                        <li><a href="#" class="white"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
-                        <li><a href="#" class="white"><i class="fab fa-instagram" aria-hidden="true"></i></a></li>
-                        <li><a href="#" class="white"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <!-- Navigation Bar -->
-        <div class="header_menu" id="header_menu">
-            <nav class="navbar navbar-default">
-                <div class="container">
-                    <div class="navbar-flex d-flex align-items-center justify-content-between w-100 pb-3 pt-3">
-                        <!-- Brand and toggle get grouped for better mobile display -->
-                        <div class="navbar-header">
-                            <a class="navbar-brand" href="${pageContext.request.contextPath}/home">
-                                <img src="${pageContext.request.contextPath}/assets/travelin/images/logo.png" alt="image">
-                            </a>
-                        </div>
-                        <!-- Collect the nav links, forms, and other content for toggling -->
-                        <div class="navbar-collapse1 d-flex align-items-center" id="bs-example-navbar-collapse-1">
-                            <ul class="nav navbar-nav" id="responsive-menu">
-                                <li><a href="${pageContext.request.contextPath}/home">Trang Chủ</a></li>
-                                <li><a href="${pageContext.request.contextPath}/about.html">Giới Thiệu</a></li>
-                                <li class="submenu dropdown active">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tours <i class="icon-arrow-down" aria-hidden="true"></i></a> 
-                                    <ul class="dropdown-menu">
-                                        <li><a href="${pageContext.request.contextPath}/tours?category=domestic">Trong Nước</a></li>
-                                        <li><a href="${pageContext.request.contextPath}/tours?category=international">Nước Ngoài</a></li>
-                                    </ul> 
-                                </li>
-                                <li><a href="${pageContext.request.contextPath}/blogs">Tin Tức</a></li>
-                                <li><a href="${pageContext.request.contextPath}/contact">Liên Hệ</a></li>
-                                <li class="search-main"><a href="#search1" class="mt_search"><i class="fa fa-search"></i></a></li>
-                            </ul>
-                        </div><!-- /.navbar-collapse -->  
-                        <div class="register-login d-flex align-items-center">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" class="me-3">
-                                <i class="icon-user"></i> Đăng Nhập
-                            </a>
-                            <a href="#" class="nir-btn white">Đặt Ngay</a>
-                        </div>
-
-                        <div id="slicknav-mobile"></div>
-                    </div>
-                </div><!-- /.container-fluid -->
-            </nav>
-        </div>
-        <!-- Navigation Bar Ends -->
-    </header>
-    <!-- header ends -->
+    <!-- Header -->
+    <jsp:include page="/user/components/header.jsp" />
+    <!-- Header Ends -->
 
     <!-- banner starts -->
     <section class="banner pt-10 pb-0 overflow-hidden" style="background-image:url(${pageContext.request.contextPath}/assets/travelin/images/testimonial.png);">
@@ -123,10 +52,70 @@
     <section class="trending pt-6 pb-0">
         <div class="container">
             <div class="row">
-                <div class="col-lg-12">
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="sidebar-sticky">
+                        <div class="list-sidebar">
+                            <div class="author-news mb-4 box-shadow p-4 rounded">
+                                <div class="author-news-content">
+                                    <div class="author-thumb mb-1">
+                                        <h4 class="mb-0 border-b pb-2">Tìm Kiếm & Lọc</h4>
+                                    </div>
+                                    <div class="author-content">
+                                        <form action="tours" method="get">
+                                            <!-- Keyword -->
+                                            <div class="form-group mb-2">
+                                                <label class="mb-1">Từ khóa</label>
+                                                <input type="text" name="keyword" value="${keyword}" class="form-control" placeholder="Nhập tên tour...">
+                                            </div>
+
+                                            <!-- Categories -->
+                                            <h4 class="border-b pb-2 mb-2 mt-4">Danh Mục</h4>
+                                            <div class="form-group mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="category" id="cat_all" value="" ${categoryId == null ? 'checked' : ''}>
+                                                    <label class="form-check-label" for="cat_all">Tất cả</label>
+                                                </div>
+                                                <c:forEach items="${categories}" var="c">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="category" id="cat_${c.categoryTourId}" value="${c.categoryTourId}" ${categoryId == c.categoryTourId ? 'checked' : ''}>
+                                                        <label class="form-check-label" for="cat_${c.categoryTourId}">${c.title}</label>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+
+                                            <!-- Price Range -->
+                                            <h4 class="border-b pb-2 mb-2 mt-4">Khoảng Giá</h4>
+                                            <div class="form-group mb-2">
+                                                <label class="mb-1">Giá thấp nhất</label>
+                                                <input type="number" name="minPrice" value="${minPrice}" class="form-control mb-2" placeholder="0">
+                                                
+                                                <label class="mb-1">Giá cao nhất</label>
+                                                <input type="number" name="maxPrice" value="${maxPrice}" class="form-control" placeholder="10,000,000">
+                                            </div>
+
+                                            <button type="submit" class="nir-btn w-100 mt-3">Áp Dụng Lọc</button>
+                                            <a href="tours" class="btn btn-link w-100 mt-1 text-center">Xóa Lọc</a>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tour List -->
+                <div class="col-lg-8">
                     <div class="row">
+                        <c:if test="${empty listT}">
+                            <div class="col-12 text-center">
+                                <h3>Không tìm thấy tour nào phù hợp!</h3>
+                                <p>Vui lòng thử lại với các tiêu chí tìm kiếm khác.</p>
+                            </div>
+                        </c:if>
+
                         <c:forEach items="${listT}" var="tour">
-                            <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="col-lg-6 col-md-6 mb-4">
                                 <div class="trend-item rounded box-shadow">
                                     <div class="trend-image position-relative">
                                         <img src="${pageContext.request.contextPath}/assets/images/products/${tour.image != null ? tour.image : 'no-image.png'}" 
@@ -169,6 +158,29 @@
                                 </div>
                             </div>
                         </c:forEach>
+
+                        <!-- Pagination -->
+                        <c:if test="${totalPages > 1}">
+                            <div class="col-lg-12">
+                                <div class="pagination-main text-center">
+                                    <ul class="pagination justify-content-center">
+                                        <c:if test="${currentPage > 1}">
+                                            <li><a href="tours?page=${currentPage - 1}&keyword=${keyword}&category=${categoryId}&minPrice=${minPrice}&maxPrice=${maxPrice}"><i class="fa fa-angle-left"></i></a></li>
+                                        </c:if>
+                                        
+                                        <c:forEach begin="1" end="${totalPages}" var="i">
+                                            <li class="${currentPage == i ? 'active' : ''}">
+                                                <a href="tours?page=${i}&keyword=${keyword}&category=${categoryId}&minPrice=${minPrice}&maxPrice=${maxPrice}">${i}</a>
+                                            </li>
+                                        </c:forEach>
+                                        
+                                        <c:if test="${currentPage < totalPages}">
+                                            <li><a href="tours?page=${currentPage + 1}&keyword=${keyword}&category=${categoryId}&minPrice=${minPrice}&maxPrice=${maxPrice}"><i class="fa fa-angle-right"></i></a></li>
+                                        </c:if>
+                                    </ul>
+                                </div>
+                            </div>
+                        </c:if>
                     </div>
                 </div>
             </div>
@@ -262,67 +274,6 @@
         <a href="#"></a>
     </div>
     <!-- Back to top ends -->
-
-    <!-- search popup -->
-    <div id="search1">
-        <button type="button" class="close">×</button>
-        <form>
-            <input type="search" value="" placeholder="Nhập từ khóa..." />
-            <button type="submit" class="btn btn-primary">Tìm</button>
-        </form>
-    </div>
-
-    <!-- login registration modal -->
-    <div class="modal fade log-reg" id="exampleModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="post-tabs">
-                        <ul class="nav nav-tabs nav-pills nav-fill" id="postsTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button aria-controls="login" aria-selected="false" class="nav-link active"
-                                    data-bs-target="#login" data-bs-toggle="tab" id="login-tab" role="tab"
-                                    type="button">Login</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button aria-controls="register" aria-selected="true" class="nav-link"
-                                    data-bs-target="#register" data-bs-toggle="tab" id="register-tab" role="tab"
-                                    type="button">Register</button>
-                            </li>
-                        </ul>
-                        <div class="tab-content blog-full" id="postsTabContent">
-                            <div aria-labelledby="login-tab" class="tab-pane fade active show" id="login" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                       <div class="blog-image rounded">
-                                            <a href="#" style="background-image: url(${pageContext.request.contextPath}/assets/travelin/images/trending/trending5.jpg);"></a>
-                                        </div> 
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <h4 class="text-center border-b pb-2">Login</h4>
-                                        <form method="post" action="#" name="contactform" id="contactform">
-                                            <div class="form-group mb-2">
-                                                <input type="text" name="user_name" class="form-control" id="fname" placeholder="User Name">
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <input type="password" name="password_name" class="form-control" id="lpass" placeholder="Password">
-                                            </div>
-                                            <div class="comment-btn mb-2 pb-2 text-center border-b">
-                                                <input type="submit" class="nir-btn w-100" id="submit" value="Login">
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <div aria-labelledby="register-tab" class="tab-pane fade" id="register" role="tabpanel">
-                                 <!-- Register Form -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- *Scripts* -->
     <script src="${pageContext.request.contextPath}/assets/travelin/js/jquery-3.5.1.min.js"></script>

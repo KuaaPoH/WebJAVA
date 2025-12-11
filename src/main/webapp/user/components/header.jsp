@@ -44,13 +44,7 @@
                             <ul class="nav navbar-nav" id="responsive-menu">
                                 <li><a href="${pageContext.request.contextPath}/home">Trang Chủ</a></li>
                                 <li><a href="${pageContext.request.contextPath}/about.html">Giới Thiệu</a></li>
-                                <li class="submenu dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tours <i class="icon-arrow-down" aria-hidden="true"></i></a> 
-                                    <ul class="dropdown-menu">
-                                        <li><a href="${pageContext.request.contextPath}/tours?category=domestic">Trong Nước</a></li>
-                                        <li><a href="${pageContext.request.contextPath}/tours?category=international">Nước Ngoài</a></li>
-                                    </ul> 
-                                </li>
+                                <li><a href="${pageContext.request.contextPath}/tours">Tours</a></li>
                                 <li><a href="${pageContext.request.contextPath}/blogs">Tin Tức</a></li>
                                 <li><a href="${pageContext.request.contextPath}/contact">Liên Hệ</a></li>
                             </ul>
@@ -66,13 +60,15 @@
                                 </a>
                             </c:if>
                             <c:if test="${sessionScope.user != null}">
-                                <div class="me-3 d-flex align-items-center">
-                                    <c:if test="${not empty sessionScope.user.avatar}">
-                                        <img src="${pageContext.request.contextPath}/assets/travelin/images/${sessionScope.user.avatar}" alt="avatar" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
-                                    </c:if>
+                                <a href="${pageContext.request.contextPath}/profile" class="me-3 d-flex align-items-center text-decoration-none text-dark">
+                                    <img src="${pageContext.request.contextPath}/assets/images/users/${sessionScope.user.avatar}" 
+                                         alt="avatar" 
+                                         class="rounded-circle me-2" 
+                                         style="width: 30px; height: 30px; object-fit: cover;"
+                                         onerror="this.src='${pageContext.request.contextPath}/assets/travelin/images/reviewer/1.jpg'">
                                     <span class="fw-bold">Xin chào, ${sessionScope.user.username}</span>
-                                </div>
-                                <a href="${pageContext.request.contextPath}/logout" class="me-3 text-danger">
+                                </a>
+                                <a href="${pageContext.request.contextPath}/logout?role=user" class="me-3 text-danger">
                                     <i class="icon-logout"></i>
                                 </a>
                             </c:if>

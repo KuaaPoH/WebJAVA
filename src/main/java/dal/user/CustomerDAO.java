@@ -67,4 +67,32 @@ public class CustomerDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
+    // Cập nhật Avatar
+    public void updateAvatar(int customerId, String avatarFile) {
+        String sql = "UPDATE tb_Customer SET Avatar = ? WHERE CustomerId = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, avatarFile);
+            st.setInt(2, customerId);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Cập nhật Thông tin cá nhân
+    public boolean updateProfile(int customerId, String phone, java.sql.Date birthday) {
+        String sql = "UPDATE tb_Customer SET Phone = ?, Birthday = ? WHERE CustomerId = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, phone);
+            st.setDate(2, birthday);
+            st.setInt(3, customerId);
+            return st.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
