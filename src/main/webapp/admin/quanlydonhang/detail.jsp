@@ -149,13 +149,15 @@
                         <div class="card-body">
                             <c:if test="${not empty order.orderDetails}">
                                 <c:forEach var="detail" items="${order.orderDetails}">
-                                    <div class="flex items-center gap-4 mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-700">
-                                        <img src="${pageContext.request.contextPath}/assets/images/products/${detail.image}" 
-                                             alt="${detail.tourName}" 
-                                             class="w-24 h-24 object-cover rounded-lg"
-                                             onerror="this.src='${pageContext.request.contextPath}/assets/images/logo-icon.png'">
-                                        <div class="flex-grow">
-                                            <h6 class="text-base font-semibold text-neutral-800 dark:text-white">${detail.tourName}</h6>
+                                    <div class="flex items-start gap-4 mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-700">
+                                        <div class="flex flex-col items-center gap-2" style="min-width: 120px;">
+                                            <img src="${pageContext.request.contextPath}/assets/images/products/${detail.image}" 
+                                                 alt="${detail.tourName}" 
+                                                 class="w-24 h-24 object-cover rounded-lg"
+                                                 onerror="this.src='${pageContext.request.contextPath}/assets/images/logo-icon.png'">
+                                            <h6 class="text-sm font-semibold text-neutral-800 dark:text-white text-center">${detail.tourName}</h6>
+                                        </div>
+                                        <div class="flex-grow pt-2">
                                             <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-1">
                                                 Ngày khởi hành: <fmt:formatDate value="${detail.departureDate}" pattern="dd/MM/yyyy"/>
                                             </p>

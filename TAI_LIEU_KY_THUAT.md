@@ -244,3 +244,67 @@ Tạo một Component JSP dùng chung (`sidebar.jsp`) và sử dụng lệnh `<%
     -   `src/main/webapp/admin/quanlydonhang/detail.jsp`: Hiển thị chi tiết đơn hàng, thông tin khách hàng, tour đã đặt và form cập nhật trạng thái sử dụng dropdown.
 
 ---
+
+## 7. 🔐 XÁC THỰC & BẢO MẬT (Authentication & Security)
+
+### 7.1. Cơ chế Đăng Nhập Kép (Dual Login)
+Hệ thống hỗ trợ 2 loại tài khoản đăng nhập trên cùng một form:
+1.  **Admin (Quản trị viên):** Lưu trong bảng `tb_Account`.
+2.  **User (Khách hàng):** Lưu trong bảng `tb_Customer`.
+
+**Logic xử lý (`LoginServlet`):**
+-   Đầu tiên kiểm tra tài khoản trong bảng `tb_Account`. Nếu đúng -> Tạo session `admin` -> Chuyển hướng vào `/admin`.
+-   Nếu không tìm thấy, kiểm tra tiếp trong bảng `tb_Customer`. Nếu đúng -> Tạo session `user` -> Chuyển hướng về `/home` (hoặc trang trước đó).
+
+### 7.2. Bảo Mật Admin (Servlet Filter)
+Sử dụng **Filter** (`controller.filter.AdminFilter`) để bảo vệ toàn bộ thư mục `/admin/*`.
+-   Mọi request vào đường dẫn bắt đầu bằng `/admin/` sẽ bị chặn lại kiểm tra.
+-   Nếu session `admin` không tồn tại -> Chuyển hướng về trang `/login`.
+-   Giải pháp này an toàn và triệt để hơn việc kiểm tra thủ công trong từng file JSP.
+
+### 7.3. Luồng Đặt Tour Yêu Cầu Đăng Nhập
+Để đảm bảo đơn hàng luôn gắn liền với một khách hàng cụ thể:
+1.  Khi người dùng nhấn "Tiến hành đặt tour" (`/booking-page`).
+2.  `BookingPageServlet` kiểm tra session `user`.
+3.  Nếu chưa đăng nhập:
+    -   Lưu URL hiện tại vào session attribute `redirectUrl`.
+    -   Chuyển hướng sang trang Login.
+4.  Tại `LoginServlet`, sau khi đăng nhập thành công:
+    -   Kiểm tra xem có `redirectUrl` không.
+    -   Nếu có -> Chuyển hướng người dùng quay lại trang đặt tour để tiếp tục.
+
+---
+
+## 8. 🧩 HEADER COMPONENT & JSP INCLUDE
+
+### Vấn đề
+Việc lặp lại code Header (Logo, Menu, Nút Login/Logout) ở nhiều file JSP (`index.jsp`, `tour/detail.jsp`...) gây khó khăn khi muốn sửa đổi giao diện hoặc logic hiển thị (ví dụ: đổi từ "Đăng nhập" sang "Xin chào User").
+
+### Giải pháp
+-   Tách toàn bộ phần Header ra thành file riêng: `src/main/webapp/user/components/header.jsp`.
+-   Sử dụng `<jsp:include page="/user/components/header.jsp" />` để nhúng vào các trang con.
+
+### Xử lý xung đột JS (Preloader)
+-   Trong template gốc, mỗi trang đều có một thẻ `<div id="preloader">`.
+-   Khi tách Header (vốn cũng chứa Preloader), nếu trang con không xóa Preloader cũ đi -> **Sẽ có 2 Preloader trùng ID**.
+-   **Hậu quả:** File JS (`main.js`) chỉ ẩn được 1 cái, cái còn lại vẫn hiển thị -> Trang web bị che khuất và xoay mãi mãi.
+-   **Khắc phục:** Xóa toàn bộ khối Preloader trong các file JSP con (`index.jsp`, `detail.jsp`) và chỉ giữ lại duy nhất 1 cái trong `header.jsp`.
+
+---
+
+## 9. ⚙️ QUY TRÌNH CHUẨN HÓA TRẠNG THÁI ĐƠN HÀNG
+
+### Vấn đề
+Ban đầu, hệ thống tự động tạo mới trạng thái "Pending" mỗi khi không tìm thấy, dẫn đến rác dữ liệu và không đồng bộ ID.
+
+### Giải pháp
+Thống nhất sử dụng bộ ID cố định cho quy trình đơn hàng:
+-   **ID 5:** Chờ xác nhận (Pending) - Mặc định khi khách mới đặt.
+-   **ID 6:** Đã xác nhận (Confirmed) - Admin duyệt.
+-   **ID 7:** Đã hủy (Cancelled) - Admin hoặc khách hủy.
+
+**Cập nhật Code:**
+-   Trong `dal.user.OrderDAO`: Xóa logic "tự động tạo status". Thay vào đó, gán cứng `statusId = 5` khi insert đơn hàng mới.
+-   **Tool Fix DB:** Tạo phương thức `fixStatusNamesToVietnamese()` trong `OrderDAO` (kích hoạt qua action `fix_db` của Admin) để chuẩn hóa tên trạng thái trong Database sang tiếng Việt.
+
+```

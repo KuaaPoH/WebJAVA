@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "BookingPageServlet", urlPatterns = {"/booking-page"})
 public class BookingPageServlet extends HttpServlet {
@@ -15,6 +16,18 @@ public class BookingPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Kiểm tra đăng nhập
+        HttpSession session = request.getSession();
+        if (session.getAttribute("user") == null) {
+            String idStr = request.getParameter("id");
+            String redirectUrl = "booking-page?id=" + (idStr != null ? idStr : "");
+            session.setAttribute("redirectUrl", redirectUrl);
+            session.setAttribute("loginMessage", "Vui lòng đăng nhập để tiếp tục đặt tour!"); // Dùng loginMessage để hiển thị bên Login
+            response.sendRedirect("login");
+            return;
+        }
+
         try {
             String idStr = request.getParameter("id");
             if (idStr == null || idStr.isEmpty()) {

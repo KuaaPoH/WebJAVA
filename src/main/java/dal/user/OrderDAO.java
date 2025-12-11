@@ -10,32 +10,6 @@ import java.sql.Statement;
 
 public class OrderDAO extends DBContext {
 
-    // Helper method to get or create Pending status ID
-    private int getOrCreatePendingStatusId() throws SQLException {
-        String statusName = "Pending";
-        String selectSql = "SELECT OrderStatusId FROM tb_OrderStatus WHERE Name = ?";
-        PreparedStatement st = connection.prepareStatement(selectSql);
-        st.setString(1, statusName);
-        ResultSet rs = st.executeQuery();
-        
-        if (rs.next()) {
-            return rs.getInt("OrderStatusId");
-        } else {
-            // Create new status if not exists
-            String insertSql = "INSERT INTO tb_OrderStatus (Name, Description) VALUES (?, ?)";
-            PreparedStatement insertSt = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
-            insertSt.setString(1, statusName);
-            insertSt.setString(2, "Mới đặt hàng");
-            insertSt.executeUpdate();
-            ResultSet keys = insertSt.getGeneratedKeys();
-            if (keys.next()) {
-                return keys.getInt(1);
-            } else {
-                throw new SQLException("Could not create default OrderStatus.");
-            }
-        }
-    }
-
     public boolean insertOrder(Order order, OrderDetail detail) {
         boolean result = false;
         String sqlOrder = "INSERT INTO [dbo].[tb_Order] "
@@ -52,8 +26,8 @@ public class OrderDAO extends DBContext {
                 connection.setAutoCommit(false);
             }
 
-            // 0. Get valid OrderStatusId
-            int statusId = getOrCreatePendingStatusId();
+            // 0. Set default OrderStatusId = 5 (Chờ)
+            int statusId = 5;
 
             // 1. Insert Order
             PreparedStatement stOrder = connection.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
