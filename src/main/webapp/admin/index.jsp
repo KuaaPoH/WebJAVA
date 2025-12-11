@@ -298,14 +298,14 @@
 
                 // --- Order Chart ---
                 var orderOptions = {
-                    series: [44, 55, 13],
-                    labels: ['Hoàn thành', 'Chờ xử lý', 'Đã hủy'],
+                    series: ${orderData},
+                    labels: ${orderLabels},
                     chart: {
                         type: 'donut',
                         height: 300,
                         fontFamily: 'Inter, sans-serif'
                     },
-                    colors: ['#22c55e', '#eab308', '#ef4444'],
+                    // colors: ['#22c55e', '#eab308', '#ef4444'], // Let ApexCharts pick colors automatically
                     plotOptions: {
                         pie: {
                             donut: {

@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DashboardDAO extends DBContext {
 
@@ -36,25 +38,22 @@ public class DashboardDAO extends DBContext {
         return list;
     }
 
-    // Returns counts for: [Total, Pending, Completed, Cancelled] - Simplification
-    // Or just a raw list of counts by status ID
-    public List<Integer> getOrderStatusCounts() {
-        List<Integer> list = new ArrayList<>();
-        String sql = "SELECT COUNT(*) FROM tb_Order GROUP BY OrderStatusId ORDER BY OrderStatusId";
+    public Map<String, Integer> getOrderStatusCounts() {
+        Map<String, Integer> map = new HashMap<>();
+        String sql = "SELECT os.Name, COUNT(o.OrderId) as Count " +
+                     "FROM tb_OrderStatus os " +
+                     "LEFT JOIN tb_Order o ON os.OrderStatusId = o.OrderStatusId " +
+                     "GROUP BY os.Name";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-                list.add(rs.getInt(1));
+                map.put(rs.getString("Name"), rs.getInt("Count"));
             }
         } catch (SQLException e) {
             System.out.println("DashboardDAO getOrderStatusCounts: " + e);
         }
-        // Ensure we return some data even if empty to avoid JS errors
-        if (list.isEmpty()) {
-            list.add(0); list.add(0); list.add(0);
-        }
-        return list;
+        return map;
     }
 
     public int countTours() {

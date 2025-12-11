@@ -14,7 +14,7 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
 
 ---
 
-## 2. Trạng Thái Hiện Tại (10/12/2025)
+## 2. Trạng Thái Hiện Tại (11/12/2025)
 
 ### ✅ Đã Hoàn Thành
 
@@ -24,73 +24,62 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
     -   [x] Tích hợp chức năng Upload ảnh, tự động lưu vào thư mục source.
     -   [x] **Quản Lý Đơn Hàng:**
         -   [x] Tạo `dal.admin.OrderDAO`: Lấy danh sách đơn hàng, chi tiết đơn, cập nhật trạng thái.
-        -   [x] Tạo `controller.admin.OrderServlet` (đổi tên từ OrderController): Xử lý request xem danh sách, chi tiết, duyệt/hủy.
-        -   [x] Cập nhật Models `Order.java` và `OrderDetail.java` với các trường phụ trợ (`statusName`, `tourName`, `image`) để hiển thị thông tin đầy đủ.
-        -   [x] Khắc phục lỗi "List cannot be resolved to a type" do thiếu import.
+        -   [x] Tạo `controller.admin.OrderServlet`: Xử lý request xem danh sách, chi tiết, duyệt/hủy.
+        -   [x] Cập nhật Models `Order` và `OrderDetail`.
+        -   [x] Sửa logic tạo đơn hàng: Luôn gán ID trạng thái mặc định là 5 (Chờ) thay vì tạo mới trạng thái "Pending".
+        -   [x] Tool fix DB: Tạo tính năng cập nhật tên trạng thái đơn hàng sang Tiếng Việt trong DB.
+    -   [x] **Bảo Mật Admin:**
+        -   [x] Tạo `AdminFilter`: Chặn truy cập trái phép vào `/admin/*`. Chỉ cho phép session Admin.
 
 -   **Frontend (Admin):**
-    -   [x] Áp dụng template WowDash cho toàn bộ trang quản trị.
-    -   [x] Hoàn thiện giao diện CRUD (Thêm, Sửa, Xóa, Xem) cho Tour, Blog.
-    -   [x] Hoàn thiện giao diện xem và xóa cho Liên hệ.
-    -   [x] Giao diện responsive, có dark mode, và đã được Việt hóa.
-    -   [x] Tích hợp thư viện `simple-datatables` với cấu hình tiếng Việt.
-    -   [x] **Component Sidebar Menu dùng chung:**
-        -   [x] Di chuyển sidebar Admin sang component dùng chung (`admin/components/sidebar.jsp`).
-        -   [x] Cập nhật tất cả các trang Admin JSP (Dashboard, Quản lý Tour, Blog, Liên hệ, Menu, Đơn hàng, Thêm/Sửa Tour, Blog, Menu) để sử dụng component sidebar dùng chung và đảm bảo `taglib` đầy đủ.
+    -   [x] Template WowDash, CRUD Tour/Blog/Liên hệ.
     -   [x] **Quản Lý Đơn Hàng:**
-        -   [x] Tạo giao diện `webapp/admin/quanlydonhang/index.jsp` (Danh sách đơn hàng).
-        -   [x] Tạo giao diện `webapp/admin/quanlydonhang/detail.jsp` (Chi tiết & Cập nhật trạng thái đơn hàng).
+        -   [x] Hiển thị danh sách với màu sắc trạng thái động theo ID (5: Vàng, 6: Xanh, 7: Đỏ).
+        -   [x] Hiển thị tên trạng thái tiếng Việt (lấy từ DB).
+        -   [x] Chi tiết đơn hàng: Cải thiện bố cục, đưa tên tour xuống dưới ảnh tour.
+        -   [x] Nút Duyệt/Hủy hoạt động ổn định thông qua GET link.
 
 -   **Backend (User):**
-    -   [x] Tạo package `dal.user` và `controller.user`.
-    -   [x] TourDAO, OrderDAO, TourReviewDAO.
-    -   [x] HomeServlet, TourDetailServlet, BookingServlet, BookingPageServlet.
+    -   [x] **Xác Thực (Authentication):**
+        -   [x] `AccountDAO` (Admin) & `CustomerDAO` (User).
+        -   [x] `LoginServlet`: Xử lý đăng nhập kép (Admin vào Dashboard, User vào Home). Hỗ trợ redirect back sau khi login.
+        -   [x] `RegisterServlet`: Đăng ký tài khoản khách hàng mới.
+    -   [x] **Đặt Tour (Booking):**
+        -   [x] `BookingPageServlet`: Yêu cầu đăng nhập trước khi đặt tour. Nếu chưa, chuyển hướng sang Login và lưu lại URL.
 
 -   **Frontend (User - Public):**
-    -   [x] Tích hợp template Travelin.
-    -   [x] Trang Chủ (Home): Hiển thị tour nổi bật.
-    -   [x] Trang Chi Tiết Tour:
-        -   [x] Hiển thị thông tin tour.
-        -   [x] Tích hợp Bản đồ (Google Maps).
-        -   [x] Hiển thị danh sách đánh giá (Reviews) & Bình luận từ DB.
-        -   [x] Form gửi đánh giá với tính năng chọn 5 sao tương tác, xử lý avatar mặc định.
-        -   [x] Cải thiện hiển thị avatar và tên/ngày trong comment.
-    -   [x] Chức năng Đặt Tour (Booking):
-        -   [x] Trang Booking chuyên biệt (`user/booking/index.jsp`) với giao diện chuyên nghiệp.
-        -   [x] Tính năng chọn Loại phòng (Standard, Deluxe...) và tự động tính tổng tiền.
-        -   [x] Tính năng chọn Phương thức thanh toán (Thẻ tín dụng/ghi nợ, Thanh toán điện tử/Paypal) và tự động tính tổng tiền.
-        -   [x] Validate form: Tự động định dạng ngày hết hạn thẻ, giới hạn CVC.
-        -   [x] Sửa lỗi nút "Gửi Yêu Cầu" không click được (do xung đột JS template).
-        -   [x] Sửa lỗi truncate code đơn hàng.
+    -   [x] Template Travelin.
+    -   [x] **Header Component:** Tách header thành `user/components/header.jsp` dùng chung.
+        -   [x] Hiển thị trạng thái đăng nhập: "Xin chào, [User]" hoặc "Đăng Nhập/Đăng Ký".
+        -   [x] Khắc phục lỗi trùng lặp Preloader khi include.
+    -   [x] **Trang Đăng Nhập / Đăng Ký:**
+        -   [x] Tách riêng `login.jsp` và `register.jsp` với giao diện chuyên nghiệp.
+        -   [x] Thông báo lỗi/thành công rõ ràng.
+    -   [x] Đăng nhập / Đăng ký thành viên: Hoàn thiện chức năng đăng nhập, đăng ký, quản lý hồ sơ.
 
 ### ⚠️ Đang thực hiện
-    -   [ ] **Hoàn thiện chức năng Duyệt/Hủy Đơn Hàng (Admin):**
-        -   [ ] Cập nhật giao diện `webapp/admin/quanlydonhang/detail.jsp` để có các nút (hoặc dropdown) cho phép Admin thay đổi trạng thái đơn hàng (Duyệt, Hủy).
-        -   [ ] Đảm bảo `controller.admin.OrderServlet` xử lý đúng logic cập nhật trạng thái đơn hàng.
+    -   [ ] **Chức năng Tìm kiếm & Lọc Tour:**
+        -   [ ] Sidebar lọc theo khoảng giá, địa điểm.
+        -   [ ] Pagination (Phân trang) cho danh sách tour.
 
 ---
 
 ## 3. Kế Hoạch Tiếp Theo
 
-### 🛡️ Quản Trị Nâng Cao (Admin Dashboard)
--   [ ] **Cải tiến Dashboard:**
-    -   [ ] Cập nhật Servlet Dashboard để lấy dữ liệu thống kê dynamic (Doanh thu, số đơn hàng, số khách).
-    -   [ ] Cập nhật biểu đồ doanh thu và phân tích đơn hàng với dữ liệu thật từ DB.
--   [ ] **Quản Lý Đánh Giá (Reviews):**
-    -   [ ] Tạo `dal.admin.TourReviewDAO` (hoặc mở rộng `dal.user.TourReviewDAO`) để lấy danh sách reviews cho Admin.
-    -   [ ] Tạo `controller.admin.ReviewServlet`: Xử lý hiển thị danh sách reviews, duyệt/ẩn (toggle status).
-    -   [ ] Tạo giao diện `webapp/admin/quanlydanhgia/index.jsp`: Hiển thị bảng reviews, có nút duyệt/ẩn.
--   [ ] **Quản Lý Danh Mục Tour:**
-    -   [ ] Tạo `dal.admin.TourCategoryDAO`.
-    -   [ ] Tạo `controller.admin.TourCategoryServlet`.
-    -   [ ] Tạo các trang `webapp/admin/quanlydanhmuc/index.jsp`, `create.jsp`, `edit.jsp`.
--   [ ] **Quản Lý Người Dùng:** (Chức năng đăng nhập/đăng ký ở phía User cũng sẽ liên quan)
-    -   [ ] Tạo `dal.admin.AccountDAO` (quản lý Admin user) và `dal.user.CustomerDAO` (quản lý khách hàng).
-    -   [ ] Tạo `controller.admin.UserServlet`: Hiển thị danh sách user, phân quyền, khóa/mở khóa.
-    -   [ ] Tạo các trang `webapp/admin/quanlynguoidung/index.jsp`, `edit.jsp`.
-
 ### 🚀 Giao Diện Người Dùng (Frontend - Public)
--   [ ] Trang Tin Tức (Blog): Chỉnh sửa lại các trang blog để hiển thị thông tin động.
--   [ ] Trang Liên Hệ: Xây dựng form liên hệ và xử lý gửi về Admin.
--   [ ] Chức năng Tìm kiếm & Lọc Tour nâng cao.
--   [ ] Đăng nhập / Đăng ký thành viên: Hoàn thiện chức năng đăng nhập, đăng ký, quản lý hồ sơ.
+-   [ ] **Trang Hồ Sơ Cá Nhân (Profile):**
+    -   [ ] Tạo `controller.user.ProfileServlet`: Lấy thông tin khách hàng và lịch sử đơn hàng.
+    -   [ ] Tạo giao diện `webapp/user/profile.jsp`: Hiển thị thông tin cá nhân, danh sách đơn hàng đã đặt và trạng thái từng đơn.
+    -   [ ] Cập nhật link "Xin chào, [User]" trong Header để trỏ đến trang Profile.
+    -   [ ] Cho phép user cập nhật thông tin cá nhân (email, phone, avatar...)
+-   [ ] Trang Tin Tức (Blog): Hoàn thiện hiển thị chi tiết bài viết.
+-   [ ] Trang Liên Hệ: Xử lý form gửi liên hệ về Admin.
+
+### 🛡️ Quản Trị Nâng Cao (Admin Dashboard)
+-   [ ] **Quản Lý Đánh Giá (Reviews):**
+    -   [ ] Tạo `controller.admin.ReviewServlet`: Duyệt/ẩn bình luận.
+    -   [ ] Tạo giao diện `webapp/admin/quanlydanhgia/index.jsp`.
+-   [ ] **Quản Lý Danh Mục Tour:**
+    -   [ ] CRUD Danh mục tour.
+-   [ ] **Quản Lý Người Dùng:**
+    -   [ ] Quản lý danh sách khách hàng và nhân viên.

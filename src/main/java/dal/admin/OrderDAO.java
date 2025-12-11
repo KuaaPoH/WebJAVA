@@ -32,6 +32,7 @@ public class OrderDAO extends DBContext {
                 order.setEmail(rs.getString("Email"));
                 order.setTotalAmount(rs.getInt("TotalAmount"));
                 order.setQuanlity(rs.getInt("Quanlity"));
+                order.setOrderStatusId(rs.getInt("OrderStatusId"));
                 order.setStatusName(rs.getString("OrderStatusName")); // Set statusName
                 order.setCreatedDate(rs.getTimestamp("CreatedDate"));
                 // ... set thêm các trường khác nếu cần
@@ -70,6 +71,7 @@ public class OrderDAO extends DBContext {
                 order.setEmail(rsOrder.getString("Email"));
                 order.setTotalAmount(rsOrder.getInt("TotalAmount"));
                 order.setQuanlity(rsOrder.getInt("Quanlity"));
+                order.setOrderStatusId(rsOrder.getInt("OrderStatusId"));
                 order.setStatusName(rsOrder.getString("OrderStatusName"));
                 order.setCreatedDate(rsOrder.getTimestamp("CreatedDate"));
                 // ... set các trường khác
@@ -131,5 +133,35 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
+    }
+    
+    // Phương thức tiện ích để sửa tên trạng thái sang tiếng Việt (Chạy 1 lần)
+    public void fixStatusNamesToVietnamese() {
+        String sql = "UPDATE tb_OrderStatus SET Name = ? WHERE OrderStatusId = ?";
+        try {
+            connection.setAutoCommit(false); // Transaction
+            PreparedStatement st = connection.prepareStatement(sql);
+            
+            // ID 5: Chờ xác nhận
+            st.setString(1, "Chờ xác nhận");
+            st.setInt(2, 5);
+            st.addBatch();
+            
+            // ID 6: Đã xác nhận
+            st.setString(1, "Đã xác nhận");
+            st.setInt(2, 6);
+            st.addBatch();
+            
+            // ID 7: Đã hủy
+            st.setString(1, "Đã hủy");
+            st.setInt(2, 7);
+            st.addBatch();
+            
+            st.executeBatch();
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

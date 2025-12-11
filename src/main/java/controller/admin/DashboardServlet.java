@@ -4,6 +4,7 @@ import dal.admin.DashboardDAO;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,17 +26,41 @@ public class DashboardServlet extends HttpServlet {
         int totalCustomers = dao.countCustomers();
         long revenue = dao.totalRevenue();
 
-        // Chart Data
+        // Revenue Chart Data
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         List<Double> monthlyRevenue = dao.getMonthlyRevenue(currentYear);
         
-        // Convert to JS Array String: [100, 200, 300...]
         StringBuilder revenueData = new StringBuilder("[");
         for (int i = 0; i < monthlyRevenue.size(); i++) {
             revenueData.append(monthlyRevenue.get(i));
             if (i < monthlyRevenue.size() - 1) revenueData.append(", ");
         }
         revenueData.append("]");
+
+        // Order Status Chart Data
+        Map<String, Integer> statusCounts = dao.getOrderStatusCounts();
+        StringBuilder orderLabels = new StringBuilder("[");
+        StringBuilder orderData = new StringBuilder("[");
+        
+        int count = 0;
+        for (Map.Entry<String, Integer> entry : statusCounts.entrySet()) {
+            orderLabels.append("'").append(entry.getKey()).append("'");
+            orderData.append(entry.getValue());
+            
+            if (count < statusCounts.size() - 1) {
+                orderLabels.append(", ");
+                orderData.append(", ");
+            }
+            count++;
+        }
+        orderLabels.append("]");
+        orderData.append("]");
+        
+        // Handle empty data case for visual appeal if DB is empty
+        if (statusCounts.isEmpty()) {
+            orderLabels = new StringBuilder("['Chưa có dữ liệu']");
+            orderData = new StringBuilder("[1]"); // Dummy data
+        }
 
         request.setAttribute("totalTours", totalTours);
         request.setAttribute("totalBlogs", totalBlogs);
@@ -44,6 +69,8 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("totalCustomers", totalCustomers);
         request.setAttribute("revenue", revenue);
         request.setAttribute("revenueData", revenueData.toString());
+        request.setAttribute("orderLabels", orderLabels.toString());
+        request.setAttribute("orderData", orderData.toString());
         request.setAttribute("currentYear", currentYear);
 
         request.getRequestDispatcher("/admin/index.jsp").forward(request, response);

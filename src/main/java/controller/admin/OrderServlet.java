@@ -31,6 +31,22 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("order", order);
             request.setAttribute("statuses", statuses);
             request.getRequestDispatcher("/admin/quanlydonhang/detail.jsp").forward(request, response);
+        } else if (action.equals("updateStatus")) {
+            // Xử lý cập nhật trạng thái qua GET (cho nút bấm nhanh)
+            int orderId = Integer.parseInt(request.getParameter("orderId"));
+            int statusId = Integer.parseInt(request.getParameter("statusId"));
+            orderDAO.updateOrderStatus(orderId, statusId);
+            
+            String from = request.getParameter("from");
+            if ("list".equals(from)) {
+                response.sendRedirect("orders?action=list");
+            } else {
+                response.sendRedirect("orders?action=view&id=" + orderId);
+            }
+        } else if (action.equals("fix_db")) {
+            // Cập nhật tên trạng thái trong DB sang Tiếng Việt
+            orderDAO.fixStatusNamesToVietnamese();
+            response.sendRedirect("orders?action=list");
         } else {
             response.sendRedirect("orders?action=list");
         }
@@ -46,7 +62,13 @@ public class OrderServlet extends HttpServlet {
             int orderId = Integer.parseInt(request.getParameter("orderId"));
             int statusId = Integer.parseInt(request.getParameter("statusId"));
             orderDAO.updateOrderStatus(orderId, statusId);
-            response.sendRedirect("orders?action=view&id=" + orderId);
+            
+            String from = request.getParameter("from");
+            if ("list".equals(from)) {
+                response.sendRedirect("orders?action=list");
+            } else {
+                response.sendRedirect("orders?action=view&id=" + orderId);
+            }
         } else {
             response.sendRedirect("orders?action=list");
         }

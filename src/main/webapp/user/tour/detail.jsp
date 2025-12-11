@@ -24,68 +24,7 @@
 
 <body>
 
-    <!-- Preloader -->
-    <div id="preloader">
-        <div id="status"></div>
-    </div>
-
-    <!-- HEADER -->
-    <header class="main_header_area">
-        <div class="header-content py-1 bg-theme">
-            <div class="container d-flex align-items-center justify-content-between">
-                <div class="links">
-                    <ul>
-                        <li><a href="#" class="white"><i class="icon-calendar white"></i> Thứ Năm, 10 Tháng 12, 2025</a></li>
-                        <li><a href="#" class="white"><i class="icon-location-pin white"></i> Hà Nội, Việt Nam</a></li>
-                        <li><a href="#" class="white"><i class="icon-clock white"></i> T2-T6: 10 AM – 5 PM</a></li>
-                    </ul>
-                </div>
-                <div class="links float-right">
-                    <ul>
-                        <li><a href="#" class="white"><i class="fab fa-facebook" aria-hidden="true"></i></a></li>
-                        <li><a href="#" class="white"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
-                        <li><a href="#" class="white"><i class="fab fa-instagram" aria-hidden="true"></i></a></li>
-                        <li><a href="#" class="white"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="header_menu" id="header_menu">
-            <nav class="navbar navbar-default">
-                <div class="container">
-                    <div class="navbar-flex d-flex align-items-center justify-content-between w-100 pb-3 pt-3">
-                        <div class="navbar-header">
-                            <a class="navbar-brand" href="${pageContext.request.contextPath}/home">
-                                <img src="${pageContext.request.contextPath}/assets/travelin/images/logo.png" alt="image">
-                            </a>
-                        </div>
-                        <div class="navbar-collapse1 d-flex align-items-center" id="bs-example-navbar-collapse-1">
-                            <ul class="nav navbar-nav" id="responsive-menu">
-                                <li><a href="${pageContext.request.contextPath}/home">Trang Chủ</a></li>
-                                <li><a href="${pageContext.request.contextPath}/about.html">Giới Thiệu</a></li>
-                                <li class="submenu dropdown active">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tours <i class="icon-arrow-down" aria-hidden="true"></i></a> 
-                                    <ul class="dropdown-menu">
-                                        <li><a href="${pageContext.request.contextPath}/tours?category=domestic">Trong Nước</a></li>
-                                        <li><a href="${pageContext.request.contextPath}/tours?category=international">Nước Ngoài</a></li>
-                                    </ul> 
-                                </li>
-                                <li><a href="${pageContext.request.contextPath}/blogs">Tin Tức</a></li>
-                                <li><a href="${pageContext.request.contextPath}/contact">Liên Hệ</a></li>
-                            </ul>
-                        </div>
-                        <div class="register-login d-flex align-items-center">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" class="me-3">
-                                <i class="icon-user"></i> Đăng Nhập
-                            </a>
-                            <a href="#" class="nir-btn white">Đặt Ngay</a>
-                        </div>
-                        <div id="slicknav-mobile"></div>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </header>
+    <jsp:include page="/user/components/header.jsp" />
 
     <!-- BANNER -->
     <div class="banner trending overflow-hidden">
