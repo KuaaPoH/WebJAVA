@@ -25,23 +25,7 @@
 
     <main class="dashboard-main">
 
-        <!-- Header -->
-        <div class="navbar-header border-b border-neutral-200 dark:border-neutral-600">
-            <div class="flex items-center justify-between">
-                <div class="col-auto">
-                    <button type="button" class="sidebar-toggle">
-                        <iconify-icon icon="heroicons:bars-3-solid" class="icon non-active"></iconify-icon>
-                        <iconify-icon icon="iconoir:arrow-right" class="icon active"></iconify-icon>
-                    </button>
-                </div>
-                <div class="col-auto">
-                    <!-- Profile Dropdown (Simplified) -->
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="text-neutral-500 dark:text-neutral-400 font-medium">Xin chào, ${sessionScope.admin.username}!</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <%@include file="/admin/components/header.jsp" %>
 
         <div class="dashboard-main-body">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-6">

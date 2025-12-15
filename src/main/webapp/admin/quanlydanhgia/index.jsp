@@ -28,38 +28,7 @@
 
     <main class="dashboard-main">
 
-        <!-- ..::  Navbar Start ::.. -->
-        <div class="navbar-header border-b border-neutral-200 dark:border-neutral-600">
-            <div class="flex items-center justify-between">
-                <div class="col-auto">
-                    <div class="flex flex-wrap items-center gap-[16px]">
-                        <button type="button" class="sidebar-toggle">
-                            <iconify-icon icon="heroicons:bars-3-solid" class="icon non-active"></iconify-icon>
-                            <iconify-icon icon="iconoir:arrow-right" class="icon active"></iconify-icon>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="text-neutral-500 dark:text-neutral-400 font-medium">Xin chào, ${sessionScope.admin.username}!</span>
-                        <button type="button" id="theme-toggle" class="w-10 h-10 bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-full flex justify-center items-center">
-                            <span id="theme-toggle-dark-icon" class="hidden">
-                                <i class="ri-sun-line"></i>
-                            </span>
-                            <span id="theme-toggle-light-icon" class="hidden">
-                                <i class="ri-moon-line"></i>
-                            </span>
-                        </button>
-                        
-                        <button data-dropdown-toggle="dropdownProfile" data-dropdown-placement="bottom-end" class="flex justify-center items-center rounded-full" type="button">
-                            <img src="${pageContext.request.contextPath}/assets/images/users/${sessionScope.admin.image != null ? sessionScope.admin.image : 'default-admin.png'}" alt="admin avatar" class="w-10 h-10 object-fit-cover rounded-full" onerror="this.src='${pageContext.request.contextPath}/assets/images/user.png'">
-                        </button>
-                        <%@include file="/admin/components/profile_dropdown.jsp" %>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- ..::  Navbar End ::.. -->
+        <%@include file="/admin/components/header.jsp" %>
 
         <div class="dashboard-main-body">
             

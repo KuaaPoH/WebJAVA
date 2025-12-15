@@ -119,22 +119,32 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
 
 ---
 
-## 4. Gợi Ý Phát Triển Tương Lai (Wishlist)
+## 4. Các Vấn Đề Đang Xử Lý
 
-Dưới đây là các tính năng được đề xuất để nâng cấp hệ thống trong các giai đoạn tiếp theo:
+### 🔴 Lỗi hiển thị Header Widget (Ngày: 16/12/2025)
 
-1.  **📧 Quên Mật Khẩu (Forgot Password):**
-    -   Cho phép người dùng reset mật khẩu thông qua Email xác thực.
-2.  **🎟️ Mã Giảm Giá (Voucher/Coupon):**
-    -   Hệ thống quản lý mã giảm giá cho Admin.
-    -   Cho phép User áp dụng mã giảm giá tại bước thanh toán.
-3.  **💳 Thanh Toán Online (Payment Gateway):**
-    -   Tích hợp cổng thanh toán thực tế (VNPAY, Momo, PayPal API) để xử lý giao dịch tự động.
-4.  **💬 Chat Trực Tuyến (Live Chat):**
-    -   Tích hợp widget chat (Facebook Messenger, Tawk.to) để hỗ trợ khách hàng realtime.
-5.  **📨 Email Automation:**
-    -   Tự động gửi email xác nhận khi: Đăng ký thành công, Đặt tour thành công, Đơn hàng bị hủy, v.v.
-6.  **📊 Báo Cáo & Xuất File:**
-    -   Cho phép Admin xuất báo cáo doanh thu, danh sách đơn hàng ra file Excel hoặc PDF.
-7.  **🌍 Đa Ngôn Ngữ (Multi-language):**
-    -   Hỗ trợ chuyển đổi ngôn ngữ Tiếng Việt / Tiếng Anh cho toàn bộ trang web.
+**Mô tả:**
+Người dùng báo cáo widget đồng hồ/ngày tháng và lời chào "Xin chào, [Username]!" trên header của trang Admin không hiển thị đúng.
+- Đồng hồ chỉ hiện "::".
+- Widget chỉ hiện "Trời quang", không luân phiên hiển thị ngày tháng.
+- Lời chào Admin không hiển thị.
+- Console của trình duyệt không báo lỗi hoặc hiển thị bất kỳ log nào liên quan đến script của widget.
+
+**Các bước đã thực hiện:**
+1.  Đã tạo component header chung (`src/main/webapp/admin/components/header.jsp`) để đồng bộ hóa header trên toàn bộ các trang Admin.
+2.  Đã tích hợp widget đồng hồ/thông tin ngày tháng/thời tiết giả lập và lời chào Admin vào `header.jsp`.
+3.  Đã căn giữa widget và điều chỉnh responsive cho các phần tử trong header.
+4.  Đã đổi màu nền header theo yêu cầu người dùng (`#273142`).
+5.  Đã thêm `console.log()` vào script JavaScript để gỡ lỗi, kiểm tra luồng thực thi và sự tồn tại của các phần tử DOM.
+
+**Các bước debug đã thử & kết quả:**
+- Thêm `console.log()`: Console của trình duyệt hoàn toàn trống, không có bất kỳ log nào, kể cả log từ chính script của widget.
+
+**Giả thuyết nguyên nhân:**
+- Script JavaScript không được thực thi trên trang, có thể do:
+    - Lỗi cú pháp JavaScript nghiêm trọng (ít khả năng vì script khá đơn giản và đã được kiểm tra).
+    - File `header.jsp` không được include đúng cách vào các trang Admin, dẫn đến việc mã HTML và JavaScript của header không bao giờ được gửi đến trình duyệt.
+    - Có lỗi trong HTML/JSP của trang mẹ (ví dụ: `index.jsp`, `profile.jsp`) trước thẻ include `header.jsp` làm hỏng quá trình phân tích cú pháp HTML/JSP của server hoặc trình duyệt.
+
+**Kế hoạch tiếp theo:**
+- Hướng dẫn người dùng kiểm tra mã nguồn trang (View page source) trực tiếp trên trình duyệt để xác minh liệu nội dung của `header.jsp` (bao gồm `<div class="admin-header">` và script JavaScript) có xuất hiện trong mã HTML mà trình duyệt nhận được hay không.

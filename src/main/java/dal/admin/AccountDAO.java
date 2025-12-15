@@ -36,4 +36,34 @@ public class AccountDAO extends DBContext {
         }
         return null;
     }
+
+    public void updateProfile(Account account) {
+        String sql = "UPDATE tb_Account SET FullName = ?, Phone = ?, Email = ?, Description = ?, Image = ? WHERE AccountId = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, account.getFullName());
+            st.setString(2, account.getPhone());
+            st.setString(3, account.getEmail());
+            st.setString(4, account.getDescription());
+            st.setString(5, account.getImage());
+            st.setInt(6, account.getAccountId());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean changePassword(int accountId, String newPassword) {
+        String sql = "UPDATE tb_Account SET Password = ? WHERE AccountId = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, newPassword);
+            st.setInt(2, accountId);
+            int rows = st.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
