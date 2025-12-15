@@ -30,6 +30,7 @@
 
     <!-- banner starts -->
     <section class="banner pt-10 pb-0 overflow-hidden" style="background-image:url(${pageContext.request.contextPath}/assets/travelin/images/testimonial.png);">
+        <div class="dot-overlay"></div>
         <div class="container">
             <div class="banner-in">
                 <div class="breadcrumb-content text-center">

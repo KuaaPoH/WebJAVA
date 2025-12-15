@@ -29,6 +29,11 @@ public class TourDetailServlet extends HttpServlet {
             Tour tour = dao.getTourById(id);
             
             if (tour != null) {
+                // Get Slides
+                dal.admin.SlideDAO slideDao = new dal.admin.SlideDAO();
+                java.util.List<model.Slide> slides = slideDao.getActiveSlides();
+                request.setAttribute("slides", slides);
+
                 request.setAttribute("tour", tour);
                 
                 // Load Reviews

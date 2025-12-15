@@ -13,6 +13,7 @@ public class TourReview {
     private int productId;
     private boolean isActive;
     private String image;
+    private String tourName;
 
     public TourReview() {
     }
@@ -98,6 +99,10 @@ public class TourReview {
         return isActive;
     }
 
+    public boolean getIsActive() {
+        return isActive;
+    }
+
     public void setActive(boolean active) {
         isActive = active;
     }
@@ -108,5 +113,13 @@ public class TourReview {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getTourName() {
+        return tourName;
+    }
+
+    public void setTourName(String tourName) {
+        this.tourName = tourName;
     }
 }

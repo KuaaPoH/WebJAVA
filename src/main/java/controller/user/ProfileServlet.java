@@ -35,6 +35,11 @@ public class ProfileServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
+        
+        // Get Slides
+        dal.admin.SlideDAO slideDao = new dal.admin.SlideDAO();
+        java.util.List<model.Slide> slides = slideDao.getActiveSlides();
+        request.setAttribute("slides", slides);
 
         // 2. Get Order History
         OrderDAO orderDAO = new OrderDAO();

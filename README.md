@@ -4,7 +4,7 @@ Tài liệu này bao gồm các bước cần thiết để cài đặt môi tr�
 
 ## 1. Yêu Cầu Môi Trường
 - **IDE:** Eclipse IDE for Enterprise Java and Web Developers (đã tích hợp Web Tools Platform).
-- **Server:** Apache Tomcat (phiên bản 10.0 trở lên).
+- **Server:** Apache Tomcat (phiên bản 11.0.14 trở lên).
 - **Database:** Microsoft SQL Server (2019 trở lên).
 - **Tool Quản lý DB:** SQL Server Management Studio (SSMS).
 - **Hệ thống quản lý phiên bản:** Git.

@@ -31,21 +31,55 @@
     <!-- Header Ends -->
 
     <!-- banner starts -->
-    <section class="banner pt-10 pb-0 overflow-hidden" style="background-image:url(${pageContext.request.contextPath}/assets/travelin/images/testimonial.png);">
-        <div class="container">
-            <div class="banner-in">
-                <div class="breadcrumb-content text-center">
-                    <h1 class="mb-0 white">Danh Sách Tour</h1>
-                    <nav aria-label="breadcrumb" class="d-block">
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/home">Trang Chủ</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Tours</li>
-                        </ul>
-                    </nav>
+    <c:choose>
+        <c:when test="${not empty slides}">
+            <div id="tourBannerCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <c:forEach items="${slides}" var="s" varStatus="status">
+                        <div class="carousel-item ${status.first ? 'active' : ''}">
+                            <section class="breadcrumb-main pb-20 pt-14" style="background-image:url(${pageContext.request.contextPath}/assets/images/${s.image}); background-size: cover; background-position: center;">
+                                <div class="section-shape section-shape1 top-inherit bottom-0" style="background-image: url(${pageContext.request.contextPath}/assets/travelin/images/shape8.png);"></div>
+                                <div class="breadcrumb-outer">
+                                    <div class="container">
+                                        <div class="breadcrumb-content text-center">
+                                            <h1 class="mb-1 white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Danh Sách Tour</h1>
+                                            <h3 class="white theme mb-3" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">${s.title}</h3>
+                                            <nav aria-label="breadcrumb" class="d-block">
+                                                <ul class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/home">Trang Chủ</a></li>
+                                                    <li class="breadcrumb-item active" aria-current="page">Tours</li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dot-overlay"></div>
+                            </section>
+                        </div>
+                    </c:forEach>
                 </div>
             </div>
-        </div>
-    </section>
+        </c:when>
+        <c:otherwise>
+            <section class="breadcrumb-main pb-20 pt-14" style="background-image:url(${pageContext.request.contextPath}/assets/travelin/images/testimonial.png);">
+                <div class="section-shape section-shape1 top-inherit bottom-0" style="background-image: url(${pageContext.request.contextPath}/assets/travelin/images/shape8.png);"></div>
+                <div class="breadcrumb-outer">
+                    <div class="container">
+                        <div class="breadcrumb-content text-center">
+                            <h1 class="mb-3 white">Danh Sách Tour</h1>
+                            <nav aria-label="breadcrumb" class="d-block">
+                                <ul class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/home">Trang Chủ</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Tours</li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <div class="dot-overlay"></div>
+            </section>
+        </c:otherwise>
+    </c:choose>
     <!-- banner ends -->
 
     <!-- Tour Grid starts -->

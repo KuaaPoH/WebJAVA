@@ -35,10 +35,28 @@
                     <span>Quản Lý Blog</span>
                 </a>
             </li>
+            <li class="${request.getRequestURI().contains("/admin/quanlyslide") ? "active" : ""}">
+                <a href="${pageContext.request.contextPath}/admin/quanlyslide">
+                    <iconify-icon icon="solar:gallery-wide-bold" class="menu-icon"></iconify-icon>
+                    <span>Quản Lý Banner</span>
+                </a>
+            </li>
             <li class="${request.getRequestURI().contains("/admin/orders") ? "active" : ""}">
                 <a href="${pageContext.request.contextPath}/admin/orders">
                     <iconify-icon icon="solar:bag-bold" class="menu-icon"></iconify-icon>
                     <span>Quản Lý Đơn Hàng</span>
+                </a>
+            </li>
+            <li class="${request.getRequestURI().contains("/admin/reviews") ? "active" : ""}">
+                <a href="${pageContext.request.contextPath}/admin/reviews">
+                    <iconify-icon icon="solar:star-bold" class="menu-icon"></iconify-icon>
+                    <span>Đánh Giá Tour</span>
+                </a>
+            </li>
+            <li class="${request.getRequestURI().contains("/admin/blog-reviews") ? "active" : ""}">
+                <a href="${pageContext.request.contextPath}/admin/blog-reviews">
+                    <iconify-icon icon="solar:chat-round-dots-bold" class="menu-icon"></iconify-icon>
+                    <span>Bình Luận Blog</span>
                 </a>
             </li>
             <li class="${request.getRequestURI().contains("/admin/customers") ? "active" : ""}">

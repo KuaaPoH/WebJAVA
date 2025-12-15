@@ -12,6 +12,7 @@ public class BlogComment {
     private int blogId;
     private boolean isActive;
     private String image;
+    private String blogTitle;
 
     public BlogComment() {
     }
@@ -26,6 +27,14 @@ public class BlogComment {
         this.blogId = blogId;
         this.isActive = isActive;
         this.image = image;
+    }
+
+    public String getBlogTitle() {
+        return blogTitle;
+    }
+
+    public void setBlogTitle(String blogTitle) {
+        this.blogTitle = blogTitle;
     }
 
     public int getCommentId() {
@@ -85,6 +94,10 @@ public class BlogComment {
     }
 
     public boolean isActive() {
+        return isActive;
+    }
+
+    public boolean getIsActive() {
         return isActive;
     }
 

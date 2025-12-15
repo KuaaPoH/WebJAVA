@@ -27,48 +27,80 @@
     <jsp:include page="/user/components/header.jsp" />
 
     <!-- BANNER -->
-    <div class="banner trending overflow-hidden">
-        <div class="section-shape section-shape1 top-inherit bottom-0" style="background-image: url(${pageContext.request.contextPath}/assets/travelin/images/shape8.png);"></div>
-        <div class="banner-slide">
-            <div class="row shop-slider">
-                <div class="col-lg-4 p-0">
-                    <div class="trend-item1 box-shadow bg-white text-center">
-                        <div class="trend-image position-relative">
-                            <img src="${pageContext.request.contextPath}/assets/travelin/images/new-deal/deal1.jpg" alt="image" class="">
-                            <div class="overlay"></div>
+    <c:choose>
+        <c:when test="${not empty slides}">
+            <div id="tourDetailBannerCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <c:forEach items="${slides}" var="s" varStatus="status">
+                        <div class="carousel-item ${status.first ? 'active' : ''}">
+                            <section class="breadcrumb-main pb-20 pt-14" style="background-image:url(${pageContext.request.contextPath}/assets/images/${s.image}); background-size: cover; background-position: center;">
+                                <div class="section-shape section-shape1 top-inherit bottom-0" style="background-image: url(${pageContext.request.contextPath}/assets/travelin/images/shape8.png);"></div>
+                                <div class="breadcrumb-outer">
+                                    <div class="container">
+                                        <div class="breadcrumb-content text-center">
+                                            <h1 class="mb-1 white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Chi Tiết Tour</h1>
+                                            <h3 class="white theme mb-3" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">${s.title}</h3>
+                                            <nav aria-label="breadcrumb" class="d-block">
+                                                <ul class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/tours">Danh Sách Tour</a></li>
+                                                    <li class="breadcrumb-item active" aria-current="page">${tour.title}</li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dot-overlay"></div>
+                            </section>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div class="banner trending overflow-hidden">
+                <div class="section-shape section-shape1 top-inherit bottom-0" style="background-image: url(${pageContext.request.contextPath}/assets/travelin/images/shape8.png);"></div>
+                <div class="banner-slide">
+                    <div class="row shop-slider">
+                        <div class="col-lg-4 p-0">
+                            <div class="trend-item1 box-shadow bg-white text-center">
+                                <div class="trend-image position-relative">
+                                    <img src="${pageContext.request.contextPath}/assets/travelin/images/new-deal/deal1.jpg" alt="image" class="">
+                                    <div class="overlay"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 p-0">
+                            <div class="trend-item1 box-shadow bg-white text-center">
+                                <div class="trend-image position-relative">
+                                    <img src="${pageContext.request.contextPath}/assets/travelin/images/new-deal/deal2.jpg" alt="image" class="">
+                                    <div class="overlay"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 p-0">
+                            <div class="trend-item1 box-shadow bg-white text-center">
+                                <div class="trend-image position-relative">
+                                    <img src="${pageContext.request.contextPath}/assets/travelin/images/new-deal/deal3.jpg" alt="image" class="">
+                                    <div class="overlay"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 p-0">
-                    <div class="trend-item1 box-shadow bg-white text-center">
-                        <div class="trend-image position-relative">
-                            <img src="${pageContext.request.contextPath}/assets/travelin/images/new-deal/deal2.jpg" alt="image" class="">
-                            <div class="overlay"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 p-0">
-                    <div class="trend-item1 box-shadow bg-white text-center">
-                        <div class="trend-image position-relative">
-                            <img src="${pageContext.request.contextPath}/assets/travelin/images/new-deal/deal3.jpg" alt="image" class="">
-                            <div class="overlay"></div>
-                        </div>
+                <div class="banner-breadcrum position-absolute top-50 mx-auto w-50 start-50 text-center translate-middle">
+                    <div class="breadcrumb-content text-center">
+                        <h1 class="mb-0 white">Chi Tiết Tour</h1>
+                        <nav aria-label="breadcrumb" class="d-block">
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/home">Trang Chủ</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">${tour.title}</li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="banner-breadcrum position-absolute top-50 mx-auto w-50 start-50 text-center translate-middle">
-            <div class="breadcrumb-content text-center">
-                <h1 class="mb-0 white">Chi Tiết Tour</h1>
-                <nav aria-label="breadcrumb" class="d-block">
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/home">Trang Chủ</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">${tour.title}</li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
+        </c:otherwise>
+    </c:choose>
 
     <!-- TOUR CONTENT -->
     <section class="trending pt-6 pb-0 bg-lgrey">

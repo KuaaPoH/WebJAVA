@@ -1,7 +1,9 @@
 package controller.user;
 
 import dal.user.TourDAO;
+import dal.admin.SlideDAO;
 import model.Tour;
+import model.Slide;
 import model.TourCategory;
 import java.io.IOException;
 import java.util.List;
@@ -17,22 +19,25 @@ public class TourListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        TourDAO dao = new TourDAO();
+        
+        // 1. Get Banner Slides (Added Feature)
+        SlideDAO slideDao = new SlideDAO();
+        List<Slide> slides = slideDao.getActiveSlides();
+        request.setAttribute("slides", slides);
 
-        // 1. Get Parameters
+        // 2. Get Filters
         String keyword = request.getParameter("keyword");
         String categoryIdStr = request.getParameter("category");
         String minPriceStr = request.getParameter("minPrice");
         String maxPriceStr = request.getParameter("maxPrice");
         String pageStr = request.getParameter("page");
 
-        // 2. Parse Parameters
+        // 3. Parse Parameters
         Integer categoryId = null;
         if (categoryIdStr != null && !categoryIdStr.isEmpty()) {
             try {
                 categoryId = Integer.parseInt(categoryIdStr);
             } catch (NumberFormatException e) {
-                // Ignore invalid format
             }
         }
 
@@ -59,25 +64,22 @@ public class TourListServlet extends HttpServlet {
             } catch (NumberFormatException e) {
             }
         }
-        int pageSize = 9; // Number of items per page
+        int pageSize = 9; 
 
-        // 3. Get Data from DAO
+        // 4. Call DAO
+        TourDAO dao = new TourDAO();
         List<Tour> list = dao.searchTours(keyword, categoryId, minPrice, maxPrice, page, pageSize);
         int totalTours = dao.countTours(keyword, categoryId, minPrice, maxPrice);
         int totalPages = (int) Math.ceil((double) totalTours / pageSize);
         List<TourCategory> categories = dao.getAllTourCategories();
 
-        // 4. Set Attributes
+        // 5. Set Attributes
         request.setAttribute("listT", list);
         request.setAttribute("categories", categories);
-        
-        // Keep search params in form
         request.setAttribute("keyword", keyword);
         request.setAttribute("categoryId", categoryId);
         request.setAttribute("minPrice", minPrice);
         request.setAttribute("maxPrice", maxPrice);
-        
-        // Pagination info
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
 

@@ -14,7 +14,7 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
 
 ---
 
-## 2. Trạng Thái Hiện Tại (11/12/2025)
+## 2. Trạng Thái Hiện Tại (15/12/2025)
 
 ### ✅ Đã Hoàn Thành
 
@@ -30,6 +30,24 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] Tool fix DB: Tạo tính năng cập nhật tên trạng thái đơn hàng sang Tiếng Việt trong DB.
     -   [x] **Bảo Mật Admin:**
         -   [x] Tạo `AdminFilter`: Chặn truy cập trái phép vào `/admin/*`. Chỉ cho phép session Admin.
+    -   [x] **Quản Lý Người Dùng (Admin):**
+        -   [x] Tạo `dal.admin.CustomerDAO` để lấy danh sách và cập nhật trạng thái.
+        -   [x] Tạo `controller.admin.CustomerServlet` để xử lý danh sách và khóa/mở khóa.
+        -   [x] Tạo giao diện `webapp/admin/quanlynguoidung/index.jsp` để hiển thị và thao tác.
+        -   [x] Cập nhật sidebar Admin.
+    -   [x] **Quản Lý Đánh Giá (Reviews) - Admin:**
+        -   [x] Tách biệt quản lý Đánh giá Tour và Bình luận Blog thành 2 trang riêng biệt để tránh xung đột.
+        -   [x] Tạo `dal.admin.ReviewDAO`: Lấy danh sách đánh giá Tour và Blog Comments.
+        -   [x] Tạo `controller.admin.ReviewServlet` (Tour) và `BlogReviewServlet` (Blog).
+        -   [x] Cập nhật Model `TourReview` và `BlogComment`: Thêm `getIsActive()` và các trường JOIN (`tourName`, `blogTitle`).
+        -   [x] Sửa lỗi hiển thị dữ liệu 500/404 và lỗi nháy giao diện.
+        -   [x] Thêm tính năng "Xem Chi Tiết" (View Modal) cho nội dung dài.
+        -   [x] Cập nhật CSS tùy chỉnh thanh cuộn (Scrollbar) cho giao diện Admin.
+    -   [x] **Quản Lý Banner (Slide) - Admin:**
+        -   [x] Tạo `dal.admin.SlideDAO` với đầy đủ CRUD.
+        -   [x] Tạo `controller.admin.SlideServlet`: Xử lý thêm/sửa/xóa và Upload ảnh banner.
+        -   [x] Tạo giao diện `admin/quanlyslide/index.jsp` (List) và `form.jsp` (Add/Edit).
+        -   [x] Cập nhật Sidebar Admin thêm menu "Quản lý Banner".
 
 -   **Frontend (Admin):**
     -   [x] Template WowDash, CRUD Tour/Blog/Liên hệ.
@@ -46,6 +64,8 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] `RegisterServlet`: Đăng ký tài khoản khách hàng mới.
     -   [x] **Đặt Tour (Booking):**
         -   [x] `BookingPageServlet`: Yêu cầu đăng nhập trước khi đặt tour. Nếu chưa, chuyển hướng sang Login và lưu lại URL.
+    -   [x] **Slide/Banner:**
+        -   [x] Cập nhật các Servlet (`TourList`, `Blog`, `BlogDetail`, `Contact`, `Profile`, `TourDetail`) để lấy danh sách Active Slide.
 
 -   **Frontend (User - Public):**
     -   [x] Template Travelin.
@@ -65,40 +85,37 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] **Quản lý Avatar:** Cho phép upload, đổi avatar (Lưu kép + Fallback).
         -   [x] **Chi Tiết Đơn Hàng:** Xem chi tiết tour, giá tiền từng món (`/order-detail`).
         -   [x] **Yêu Cầu Hủy:** Cho phép user gửi yêu cầu hủy đơn (Status ID 1008).
+    -   [x] **Trang Tin Tức (Blog):**
+        -   [x] Tạo `dal.user.BlogDAO`, `BlogCommentDAO`.
+        -   [x] Tạo `controller.user.BlogServlet` (List) & `BlogDetailServlet` (Detail).
+        -   [x] Tạo giao diện `webapp/user/blog.jsp` & `blog_detail.jsp`.
+        -   [x] Tính năng bình luận bài viết.
+    -   [x] **Trang Liên Hệ:**
+        -   [x] Tạo `dal.user.ContactDAO`, `controller.user.ContactServlet`.
+        -   [x] Tạo giao diện `webapp/user/contact.jsp`.
+        -   [x] Xử lý form gửi liên hệ lưu vào Database.
     -   [x] **Hệ Thống Session (Nâng Cao):**
         -   [x] Chế độ chạy song song (Dual Session): Admin và User login cùng lúc trên 1 trình duyệt.
         -   [x] Tách biệt `LogoutServlet` xử lý theo role.
-    -   [ ] **Quản Lý Người Dùng (Admin):**
-        -   [x] Tạo `dal.admin.CustomerDAO` để lấy danh sách và cập nhật trạng thái.
-        -   [x] Tạo `controller.admin.CustomerServlet` để xử lý danh sách và khóa/mở khóa.
-        -   [x] Tạo giao diện `webapp/admin/quanlynguoidung/index.jsp` để hiển thị và thao tác.
-        -   [x] Cập nhật sidebar Admin.
-        -   [ ] **Ghi chú:** Đang có lỗi phát sinh trong chức năng này, cần kiểm tra và khắc phục.
+    -   [x] **Giao Diện (UI) & Slider:**
+        -   [x] **Trang Chủ:** Giữ banner tĩnh theo yêu cầu.
+        -   [x] **Các Trang Con (Tour, Blog, Contact, Profile...):** Tích hợp Slider (Bootstrap Carousel) thay thế banner tĩnh cũ.
+        -   [x] Banner Slider hiển thị ảnh và tiêu đề động lấy từ Database.
+        -   [x] Fallback: Tự động hiển thị banner tĩnh nếu không có slide nào được kích hoạt.
 
 ### ⚠️ Đang thực hiện
-    -   [ ] **Quản Lý Đánh Giá (Reviews):**
-        -   [ ] Tạo `controller.admin.ReviewServlet`: Duyệt/ẩn bình luận.
-        -   [ ] Tạo giao diện `webapp/admin/quanlydanhgia/index.jsp`.
+    -   [ ] Admin: Quản Lý Danh Mục (Categories).
+    -   [ ] Admin: Báo cáo doanh thu (Reports).
 
 ---
 
 ## 3. Kế Hoạch Tiếp Theo
 
-### 🚀 Giao Diện Người Dùng (Frontend - Public)
--   [ ] **Trang Hồ Sơ Cá Nhân (Profile):**
-    -   [ ] Tạo `controller.user.ProfileServlet`: Lấy thông tin khách hàng và lịch sử đơn hàng.
-    -   [ ] Tạo giao diện `webapp/user/profile.jsp`: Hiển thị thông tin cá nhân, danh sách đơn hàng đã đặt và trạng thái từng đơn.
-    -   [ ] Cập nhật link "Xin chào, [User]" trong Header để trỏ đến trang Profile.
-    -   [ ] Cho phép user cập nhật thông tin cá nhân (email, phone, avatar...)
--   [ ] Trang Tin Tức (Blog): Hoàn thiện hiển thị chi tiết bài viết.
--   [ ] Trang Liên Hệ: Xử lý form gửi liên hệ về Admin.
-
 ### 🛡️ Quản Trị Nâng Cao (Admin Dashboard)
--   [ ] **Quản Lý Đánh Giá (Reviews):**
-    -   [ ] Tạo `controller.admin.ReviewServlet`: Duyệt/ẩn bình luận.
-    -   [ ] Tạo giao diện `webapp/admin/quanlydanhgia/index.jsp`.
 -   [ ] **Quản Lý Danh Mục Tour:**
     -   [ ] CRUD Danh mục tour.
+-   [ ] **Thống Kê Báo Cáo:**
+    -   [ ] Xuất báo cáo doanh thu ra Excel.
 
 ---
 

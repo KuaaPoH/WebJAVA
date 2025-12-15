@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
-@WebServlet(name = "BlogServlet", urlPatterns = {"/admin/quanlyblog"})
+@WebServlet(name = "AdminBlogServlet", urlPatterns = {"/admin/quanlyblog"})
 @MultipartConfig
 public class BlogServlet extends HttpServlet {
 

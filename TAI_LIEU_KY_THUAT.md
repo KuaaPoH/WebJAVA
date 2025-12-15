@@ -3,7 +3,7 @@
 Tài liệu này ghi lại các giải pháp kỹ thuật và kinh nghiệm được áp dụng trong quá trình phát triển dự án.
 
 ## 1. 📘 HƯỚNG DẪN: CHUYỂN ĐỔI TEMPLATE (LARAVEL/PHP -> JSP)
-*Kinh nghiệm rút ra từ việc chuyển đổi giao diện WowDash (Laravel) và Travelin (HTML/CSS/JS tĩnh).*
+*Kinh nghiệm rút ra từ việc chuyển đổi giao diện WowDash (Laravel) và Travelin (HTML/CSS/JS tĩnh).
 
 ### Nguyên Tắc Cốt Lõi
 Tomcat không chạy được file `.php` hay cú pháp Blade (`@extends`, `{{ asset }}`). Cần trích xuất HTML/CSS/JS tĩnh và nhúng vào JSP.
@@ -110,6 +110,7 @@ Hệ thống Dashboard hoạt động theo mô hình MVC tiêu chuẩn:
     -   **Quan trọng:** Chuyển đổi List này thành chuỗi String dạng mảng JSON thủ công (hoặc dùng thư viện GSON/Jackson nếu có).
     
     *Ví dụ output:* `"[0.0, 1500.0, 0.0, 2000.0, ...]"`
+
 
 ### Tích Hợp ApexCharts
 Sử dụng thư viện **ApexCharts** qua CDN để vẽ biểu đồ tương tác.
@@ -307,8 +308,6 @@ Thống nhất sử dụng bộ ID cố định cho quy trình đơn hàng:
     -   Thay vào đó, gán cứng `statusId = 5` khi insert đơn hàng mới.
     -   **Tool Fix DB:** Tạo phương thức `fixStatusNamesToVietnamese()` trong `OrderDAO` (kích hoạt qua action `fix_db` của Admin) để chuẩn hóa tên trạng thái trong Database sang tiếng Việt.
 
-```
-
 ---
 
 ## 10. 🔄 CHẾ ĐỘ CHẠY SONG SONG (DUAL SESSION)
@@ -374,3 +373,50 @@ Cho phép quản trị viên xem danh sách khách hàng và thực hiện các 
     *   **Hành động:** Cung cấp các nút "Khóa tài khoản" (icon khóa) và "Mở khóa tài khoản" (icon mở khóa) tương ứng với trạng thái hiện tại của người dùng. Các nút có `onclick` confirm để tránh thao tác nhầm lẫn.
 
 4.  **Tích hợp Sidebar:** Đã thêm mục "Quản Lý Khách Hàng" vào `admin/components/sidebar.jsp` để dễ dàng truy cập.
+
+---
+
+## 13. ⭐ QUẢN LÝ ĐÁNH GIÁ & BÌNH LUẬN (Admin)
+
+### Mục đích
+Tách biệt việc quản lý đánh giá Tour (có sao) và bình luận Blog (chỉ nội dung) để tránh xung đột dữ liệu và logic.
+
+### Giải pháp Kỹ thuật
+
+1.  **Tách Module:**
+    *   **Đánh giá Tour:** `/admin/reviews` sử dụng `ReviewServlet` và `dal.admin.ReviewDAO`.
+    *   **Bình luận Blog:** `/admin/blog-reviews` sử dụng `BlogReviewServlet` (Mới) và vẫn dùng `ReviewDAO` nhưng gọi hàm riêng.
+
+2.  **Fix Lỗi 500 (JSP EL):**
+    *   JSP gọi `${item.isActive}` sẽ tìm kiếm phương thức `getIsActive()` trong Java Bean.
+    *   **Lỗi:** Model `TourReview` chỉ có `isActive()`, thiếu `getIsActive()`, gây ra `PropertyNotFoundException`.
+    *   **Sửa:** Bổ sung phương thức `public boolean getIsActive() { return isActive; }` vào các Model.
+
+3.  **Giao diện (UI/UX):**
+    *   **View Modal:** Sử dụng JavaScript để hiển thị nội dung chi tiết trong popup (Modal) thay vì phải tải lại trang, giúp xem được các bình luận dài.
+    *   **Custom Scrollbar:** Thêm CSS để thanh cuộn mỏng và đẹp hơn, phù hợp với Dark Mode.
+    *   **Fix Font:** Sửa đường dẫn Google Fonts bị lỗi (`display=re` -> `display=swap`) gây hiện tượng nháy chữ.
+
+---
+
+## 14. 🖼️ QUẢN LÝ BANNER / SLIDE (Admin)
+
+### Mục đích
+Cho phép Admin thay đổi các banner quảng cáo trên trang chủ mà không cần can thiệp code.
+
+### Chi tiết kỹ thuật
+
+1.  **Model & DAO:**
+    *   Model `Slide` map với bảng `tb_Slide`.
+    *   DAO hỗ trợ các hàm CRUD cơ bản.
+
+2.  **Upload Ảnh Banner:**
+    *   Sử dụng `@MultipartConfig` trong Servlet.
+    *   Lưu ảnh vào thư mục `assets/images/banners`.
+    *   Xử lý tên file để lưu đường dẫn tương đối vào Database.
+
+3.  **Tích hợp Frontend (Đa trang):**
+    *   **SlideDAO:** Thêm hàm `getActiveSlides()` để lấy danh sách banner đang hoạt động.
+    *   **Logic:** Các Servlet (`TourList`, `Blog`, `Contact`, `Profile`...) gọi DAO để lấy slide và truyền vào request.
+    *   **Giao diện:** Thay thế banner tĩnh bằng `Bootstrap Carousel`. Nếu không có slide active, hệ thống tự động fallback về banner tĩnh mặc định.
+    *   **Trang chủ (`HomeServlet`):** Giữ nguyên banner tĩnh theo yêu cầu thiết kế.
