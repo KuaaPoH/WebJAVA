@@ -3,9 +3,10 @@
 <%@taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en">
 
 <head>
+    <%@include file="/admin/components/theme_loader.jsp" %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hồ Sơ Cá Nhân - Admin</title>
@@ -24,15 +25,29 @@
     <style>
         /* Scoped CSS from Template-1 to avoid conflicts */
         .profile-wrapper {
-            --bg-card: #1a1f33;
-            --bg-input: #232840;
-            --text-main: #ffffff;
-            --text-secondary: #a0aec0;
+            /* Default Light Mode Variables */
+            --bg-card: #ffffff;
+            --bg-input: #f3f4f6;
+            --text-main: #1f2937;
+            --text-secondary: #6b7280;
             --accent-blue: #3b82f6;
             --accent-green: #10b981;
             --border-radius: 12px;
             font-family: 'Inter', sans-serif;
             color: var(--text-main);
+        }
+
+        /* Dark Mode Overrides */
+        :is(.dark .profile-wrapper) {
+            --bg-card: #1a1f33;
+            --bg-input: #232840;
+            --text-main: #ffffff;
+            --text-secondary: #a0aec0;
+        }
+
+        /* Smooth Transition for Profile Components */
+        .profile-wrapper * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         /* --- ANIMATIONS --- */
@@ -107,13 +122,20 @@
         .profile-wrapper .input-wrapper:focus-within { 
             border-color: var(--accent-blue); 
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Blue glow ring */
-            background-color: rgba(59, 130, 246, 0.05); /* Slight blue tint background */
         }
 
         .profile-wrapper .input-wrapper i.icon-left { color: #64748b; margin-right: 10px; }
         .profile-wrapper .input-wrapper input, .profile-wrapper .input-wrapper textarea { 
             background: transparent; border: none; color: var(--text-main); 
             padding: 12px 0; width: 100%; outline: none; 
+        }
+        
+        /* FIX: Remove inner default browser/bootstrap focus border */
+        .profile-wrapper .input-wrapper input:focus, 
+        .profile-wrapper .input-wrapper textarea:focus {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
         }
         
         .profile-wrapper .btn-save {

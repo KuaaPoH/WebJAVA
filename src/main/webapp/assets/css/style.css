@@ -8921,3 +8921,34 @@ h6, .h6 {
 .dark ::-webkit-scrollbar-thumb:hover {
     background-color: #6b7280;
 }
+/* --- Global Smooth Theme Transition --- */
+body,
+.card,
+.sidebar,
+.sidebar-logo,
+.dashboard-main-body,
+.d-footer,
+input,
+select,
+textarea,
+button,
+table,
+tr,
+td,
+th,
+.dropdown-menu,
+.navbar,
+.modal-content,
+.offcanvas,
+.icon-box,
+span,
+h1, h2, h3, h4, h5, h6, p, a, i, iconify-icon,
+.bg-neutral-100, .dark\\:bg-neutral-800,
+.text-neutral-800, .dark\\:text-white {
+    transition: background-color 0.3s ease-in-out, 
+                color 0.3s ease-in-out, 
+                border-color 0.3s ease-in-out, 
+                box-shadow 0.3s ease-in-out,
+                fill 0.3s ease-in-out,
+                stroke 0.3s ease-in-out !important;
+}

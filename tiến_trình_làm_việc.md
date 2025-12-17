@@ -103,6 +103,16 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] Banner Slider hiển thị ảnh và tiêu đề động lấy từ Database.
         -   [x] Fallback: Tự động hiển thị banner tĩnh nếu không có slide nào được kích hoạt.
 
+    -   [x] **Giao Diện & Trải Nghiệm (UI/UX) - Admin:**
+        -   [x] **Widget Đồng hồ & Thời tiết:** Tích hợp API Open-Meteo hiển thị thời tiết thực tế tại Vinh.
+        -   [x] **Chế độ Sáng/Tối (Light/Dark Mode):**
+            -   [x] Hỗ trợ chuyển đổi giao diện toàn hệ thống.
+            -   [x] Thêm hiệu ứng chuyển màu mượt mà (smooth transition 0.3s).
+            -   [x] Khắc phục lỗi FOUC (Flash of Unstyled Content): Loại bỏ hiện tượng "nháy đen" khi tải trang bằng script `theme_loader.jsp`.
+        -   [x] **Trang Profile:**
+            -   [x] Cập nhật giao diện hỗ trợ cả Light/Dark mode.
+            -   [x] Fix lỗi viền input focus bị chồng chéo (chỉ hiển thị glow, tắt outline mặc định).
+
 ### ⚠️ Đang thực hiện
     -   [ ] Admin: Quản Lý Danh Mục (Categories).
     -   [ ] Admin: Báo cáo doanh thu (Reports).
@@ -121,30 +131,16 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
 
 ## 4. Các Vấn Đề Đang Xử Lý
 
-### 🔴 Lỗi hiển thị Header Widget (Ngày: 16/12/2025)
+### 🟢 Đã Xử Lý: Lỗi hiển thị Header Widget & Dark Mode (Ngày: 17/12/2025)
 
 **Mô tả:**
-Người dùng báo cáo widget đồng hồ/ngày tháng và lời chào "Xin chào, [Username]!" trên header của trang Admin không hiển thị đúng.
-- Đồng hồ chỉ hiện "::".
-- Widget chỉ hiện "Trời quang", không luân phiên hiển thị ngày tháng.
-- Lời chào Admin không hiển thị.
-- Console của trình duyệt không báo lỗi hoặc hiển thị bất kỳ log nào liên quan đến script của widget.
+- Widget đồng hồ lỗi hiển thị ngày giờ và vị trí chưa hợp lý.
+- Chế độ Dark Mode bị lỗi FOUC (nháy đen khi reload).
+- Trang Profile hiển thị viền input xấu.
 
-**Các bước đã thực hiện:**
-1.  Đã tạo component header chung (`src/main/webapp/admin/components/header.jsp`) để đồng bộ hóa header trên toàn bộ các trang Admin.
-2.  Đã tích hợp widget đồng hồ/thông tin ngày tháng/thời tiết giả lập và lời chào Admin vào `header.jsp`.
-3.  Đã căn giữa widget và điều chỉnh responsive cho các phần tử trong header.
-4.  Đã đổi màu nền header theo yêu cầu người dùng (`#273142`).
-5.  Đã thêm `console.log()` vào script JavaScript để gỡ lỗi, kiểm tra luồng thực thi và sự tồn tại của các phần tử DOM.
+**Giải pháp:**
+1.  **Widget:** Chuyển sang vị trí giữa, sử dụng API thời tiết thật, sửa xung đột cú pháp JSP/JS.
+2.  **Dark Mode:** Tạo `theme_loader.jsp` chèn vào `<head>` để kiểm tra theme trước khi render. Thêm CSS transition global.
+3.  **Profile:** CSS override tắt `outline` mặc định của browser cho input.
 
-**Các bước debug đã thử & kết quả:**
-- Thêm `console.log()`: Console của trình duyệt hoàn toàn trống, không có bất kỳ log nào, kể cả log từ chính script của widget.
-
-**Giả thuyết nguyên nhân:**
-- Script JavaScript không được thực thi trên trang, có thể do:
-    - Lỗi cú pháp JavaScript nghiêm trọng (ít khả năng vì script khá đơn giản và đã được kiểm tra).
-    - File `header.jsp` không được include đúng cách vào các trang Admin, dẫn đến việc mã HTML và JavaScript của header không bao giờ được gửi đến trình duyệt.
-    - Có lỗi trong HTML/JSP của trang mẹ (ví dụ: `index.jsp`, `profile.jsp`) trước thẻ include `header.jsp` làm hỏng quá trình phân tích cú pháp HTML/JSP của server hoặc trình duyệt.
-
-**Kế hoạch tiếp theo:**
-- Hướng dẫn người dùng kiểm tra mã nguồn trang (View page source) trực tiếp trên trình duyệt để xác minh liệu nội dung của `header.jsp` (bao gồm `<div class="admin-header">` và script JavaScript) có xuất hiện trong mã HTML mà trình duyệt nhận được hay không.
+**Trạng thái:** Đã hoàn thành.

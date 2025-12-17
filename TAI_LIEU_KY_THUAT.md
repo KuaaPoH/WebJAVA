@@ -420,3 +420,37 @@ Cho phép Admin thay đổi các banner quảng cáo trên trang chủ mà khôn
     *   **Logic:** Các Servlet (`TourList`, `Blog`, `Contact`, `Profile`...) gọi DAO để lấy slide và truyền vào request.
     *   **Giao diện:** Thay thế banner tĩnh bằng `Bootstrap Carousel`. Nếu không có slide active, hệ thống tự động fallback về banner tĩnh mặc định.
     *   **Trang chủ (`HomeServlet`):** Giữ nguyên banner tĩnh theo yêu cầu thiết kế.
+
+---
+
+## 15. ⛅ WIDGET ĐỒNG HỒ & THỜI TIẾT (Admin Header)
+
+### Giới thiệu
+Tính năng hiển thị thông tin thời gian thực và thời tiết tại Header của trang quản trị, giúp giao diện sinh động và cung cấp thông tin hữu ích.
+
+### Chi tiết Kỹ thuật
+
+1.  **API Thời tiết:**
+    -   Sử dụng **Open-Meteo API** (Miễn phí, không cần API Key).
+    -   Endpoint: `https://api.open-meteo.com/v1/forecast?latitude=...&longitude=...&current_weather=true`
+    -   **Cấu hình tọa độ:** Hiện tại đang được cấu hình cứng cho **Vinh, Nghệ An** (Lat: 18.6733, Lon: 105.6924) trong script của `header.jsp`.
+
+2.  **Cơ chế hoạt động (JavaScript):**
+    -   **Đồng hồ:** Hàm `updateClock()` chạy mỗi giây (`setInterval 1000ms`).
+    -   **Luân phiên thông tin:** Hàm `toggleInfo()` chạy mỗi 4 giây, sử dụng CSS transition (`opacity`) để chuyển đổi mượt mà giữa hiển thị **Ngày tháng (Format Tiếng Việt)** và **Thời tiết**.
+    -   **Cập nhật thời tiết:** Dữ liệu thời tiết được fetch ngay khi tải trang và tự động làm mới mỗi **15 phút**.
+
+3.  **Xử lý mã Thời tiết (WMO Codes):**
+    -   API trả về `weathercode` (chuẩn WMO).
+    -   Hàm `getWeatherDetails(code)` ánh xạ mã này sang:
+        -   **Text:** Tiếng Việt (Ví dụ: 0 -> "Trời quang", 1-3 -> "Có mây", 61 -> "Mưa"...). 
+        -   **Icon:** Class của thư viện **FontAwesome** (Ví dụ: `fas fa-sun`, `fas fa-cloud-rain`).
+
+4.  **Lưu ý Phát triển (JSP Conflict):**
+    -   **Vấn đề:** Cú pháp Template Literal của JavaScript (ES6) sử dụng `${biến}` trùng với cú pháp Expression Language (EL) của JSP.
+    -   **Giải pháp:** Trong file `.jsp`, bắt buộc phải sử dụng **phép cộng chuỗi** (`'Chuỗi ' + bien`) thay vì backticks. Nếu dùng backticks với `${}`, Jasper Engine sẽ cố gắng parse và gây lỗi 500.
+
+5.  **Giao diện (UI/UX):**
+    -   **Vị trí:** Căn giữa (absolute center) Header.
+    -   **Responsive:** Ẩn trên Mobile để tiết kiệm diện tích.
+    -   **Theme:** Hỗ trợ đổi màu icon (Vàng cam/Trắng) tương thích với Light/Dark mode.

@@ -2,9 +2,10 @@
 <%@taglib prefix="c" uri="jakarta.tags.core" %> 
 
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en">
 
 <head>
+    <%@include file="/admin/components/theme_loader.jsp" %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chỉnh Sửa Bài Viết - Quản Lý Blog</title>

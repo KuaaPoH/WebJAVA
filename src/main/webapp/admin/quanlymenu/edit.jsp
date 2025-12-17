@@ -1,13 +1,14 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+﻿<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %> 
 
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" >
 
 <head>
+    <%@include file="/admin/components/theme_loader.jsp" %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chỉnh Sửa Menu</title>
+    <title>Chá»‰nh Sá»­a Menu</title>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/images/favicon.png" sizes="16x16">
     
     <!-- google fonts -->
@@ -39,32 +40,32 @@
                 <li>
                     <a href="${pageContext.request.contextPath}/admin">
                         <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
-                        <span>Trang Chủ</span>
+                        <span>Trang Chá»§</span>
                     </a>
                 </li>
-                <li class="sidebar-menu-group-title">Quản Lý</li>
+                <li class="sidebar-menu-group-title">Quáº£n LĂ½</li>
                 <li>
                     <a href="${pageContext.request.contextPath}/admin/quanlytour">
                         <iconify-icon icon="mingcute:storage-line" class="menu-icon"></iconify-icon>
-                        <span>Quản Lý Tour</span>
+                        <span>Quáº£n LĂ½ Tour</span>
                     </a>
                 </li>
                 <li>
                     <a href="${pageContext.request.contextPath}/admin/quanlyblog">
                         <iconify-icon icon="icon-park-outline:writing-fluently" class="menu-icon"></iconify-icon>
-                        <span>Quản Lý Blog</span>
+                        <span>Quáº£n LĂ½ Blog</span>
                     </a>
                 </li>
                 <li>
                     <a href="${pageContext.request.contextPath}/admin/quanlylienhe">
                         <iconify-icon icon="fluent:contact-card-20-regular" class="menu-icon"></iconify-icon>
-                        <span>Quản Lý Liên Hệ</span>
+                        <span>Quáº£n LĂ½ LiĂªn Há»‡</span>
                     </a>
                 </li>
                 <li class="active">
                     <a href="${pageContext.request.contextPath}/admin/quanlymenu">
                         <iconify-icon icon="mingcute:menu-line" class="menu-icon"></iconify-icon>
-                        <span>Quản Lý Menu</span>
+                        <span>Quáº£n LĂ½ Menu</span>
                     </a>
                 </li>
             </ul>
@@ -79,16 +80,16 @@
         <div class="dashboard-main-body">
             
             <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
-                <h6 class="text-xl font-semibold mb-0 dark:text-white">Chỉnh Sửa Menu</h6>
+                <h6 class="text-xl font-semibold mb-0 dark:text-white">Chá»‰nh Sá»­a Menu</h6>
                 <ul class="flex items-center gap-[6px]">
                     <li class="font-medium">
                         <a href="${pageContext.request.contextPath}/admin/quanlymenu" class="flex items-center gap-2 hover:text-primary-600 text-neutral-500 dark:text-neutral-400">
                            <iconify-icon icon="material-symbols:menu-outline" class="icon text-lg"></iconify-icon>
-                            Danh Sách Menu
+                            Danh SĂ¡ch Menu
                         </a>
                     </li>
                     <li class="text-neutral-500 dark:text-neutral-400">-</li>
-                    <li class="text-neutral-500 dark:text-neutral-400 font-medium">Sửa: ${menu.title}</li>
+                    <li class="text-neutral-500 dark:text-neutral-400 font-medium">Sá»­a: ${menu.title}</li>
                 </ul>
             </div>
 
@@ -97,7 +98,7 @@
                 <div class="col-span-12">
                     <div class="card border-0">
                         <div class="card-header">
-                            <h5 class="text-lg font-semibold mb-0">Cập nhật thông tin Menu</h5>
+                            <h5 class="text-lg font-semibold mb-0">Cáº­p nháº­t thĂ´ng tin Menu</h5>
                         </div>
                         <div class="card-body">
                             <form action="${pageContext.request.contextPath}/admin/quanlymenu" method="post">
@@ -106,7 +107,7 @@
                                 
                                 <div class="grid grid-cols-12 gap-4">
                                     <div class="col-span-12 md:col-span-6">
-                                        <label class="form-label">Tiêu Đề</label>
+                                        <label class="form-label">TiĂªu Äá»</label>
                                         <input type="text" name="title" class="form-control" value="${menu.title}" required>
                                     </div>
                                     <div class="col-span-12 md:col-span-6">
@@ -115,17 +116,17 @@
                                     </div>
 
                                     <div class="col-span-12 md:col-span-4">
-                                        <label class="form-label">Vị Trí</label>
+                                        <label class="form-label">Vá»‹ TrĂ­</label>
                                         <input type="number" name="position" class="form-control" value="${menu.position}" required>
                                     </div>
                                     <div class="col-span-12 md:col-span-4">
-                                        <label class="form-label">Cấp</label>
+                                        <label class="form-label">Cáº¥p</label>
                                         <input type="number" name="levels" class="form-control" value="${menu.levels}" required>
                                     </div>
                                     <div class="col-span-12 md:col-span-4">
                                         <label class="form-label">Menu Cha</label>
                                         <select name="parentId" class="form-control dark:bg-neutral-700 dark:text-white">
-                                            <option value="0">-- Không có (Là menu gốc) --</option>
+                                            <option value="0">-- KhĂ´ng cĂ³ (LĂ  menu gá»‘c) --</option>
                                             <c:forEach items="${allMenus}" var="m">
                                                 <c:if test="${m.menuId != menu.menuId}">
                                                     <option value="${m.menuId}" ${m.menuId == menu.parentId ? 'selected' : ''}>${m.title}</option>
@@ -137,13 +138,13 @@
                                     <div class="col-span-12">
                                         <div class="flex items-center gap-2">
                                             <input class="form-check-input rounded-full" type="checkbox" name="active" value="on" id="activeCheck" ${menu.active ? 'checked' : ''}>
-                                            <label class="form-check-label" for="activeCheck">Kích hoạt (Hiển thị ngay)</label>
+                                            <label class="form-check-label" for="activeCheck">KĂ­ch hoáº¡t (Hiá»ƒn thá»‹ ngay)</label>
                                         </div>
                                     </div>
                                     
                                     <div class="col-span-12 flex gap-3 mt-4">
-                                        <button type="submit" class="btn btn-primary-600">Lưu Thay Đổi</button>
-                                        <a href="${pageContext.request.contextPath}/admin/quanlymenu" class="btn btn-danger-600">Hủy Bỏ</a>
+                                        <button type="submit" class="btn btn-primary-600">LÆ°u Thay Äá»•i</button>
+                                        <a href="${pageContext.request.contextPath}/admin/quanlymenu" class="btn btn-danger-600">Há»§y Bá»</a>
                                     </div>
                                 </div>
                             </form>
@@ -157,7 +158,7 @@
         
         <footer class="d-footer">
             <div class="flex items-center justify-between gap-3">
-                <p class="mb-0">© 2025. All Rights Reserved.</p>
+                <p class="mb-0">Â© 2025. All Rights Reserved.</p>
             </div>
         </footer>
 
@@ -172,3 +173,4 @@
 </body>
 
 </html>
+
