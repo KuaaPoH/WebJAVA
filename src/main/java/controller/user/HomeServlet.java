@@ -24,8 +24,12 @@ public class HomeServlet extends HttpServlet {
         SlideDAO slideDao = new SlideDAO();
         List<Slide> slides = slideDao.getActiveSlides();
         
+        dal.user.BlogDAO blogDao = new dal.user.BlogDAO();
+        List<model.Blog> latestBlogs = blogDao.getLatestBlogs(3);
+        
         request.setAttribute("listT", list);
         request.setAttribute("slides", slides);
+        request.setAttribute("latestBlogs", latestBlogs);
         request.getRequestDispatcher("/user/index.jsp").forward(request, response);
     }
 

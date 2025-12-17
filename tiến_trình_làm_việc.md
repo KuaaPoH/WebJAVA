@@ -14,7 +14,7 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
 
 ---
 
-## 2. Trạng Thái Hiện Tại (15/12/2025)
+## 2. Trạng Thái Hiện Tại (17/12/2025)
 
 ### ✅ Đã Hoàn Thành
 
@@ -48,6 +48,9 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] Tạo `controller.admin.SlideServlet`: Xử lý thêm/sửa/xóa và Upload ảnh banner.
         -   [x] Tạo giao diện `admin/quanlyslide/index.jsp` (List) và `form.jsp` (Add/Edit).
         -   [x] Cập nhật Sidebar Admin thêm menu "Quản lý Banner".
+    -   [x] **Sửa lỗi Font chữ (Encoding):**
+        -   [x] Fix lỗi hiển thị tiếng Việt trên toàn bộ các trang Admin (Khách hàng, Đánh giá, Đơn hàng, Bình luận Blog, Liên hệ, Menu, Slide).
+        -   [x] Cập nhật tất cả Servlet Admin để hỗ trợ `request.setCharacterEncoding("UTF-8")` cho phương thức POST.
 
 -   **Frontend (Admin):**
     -   [x] Template WowDash, CRUD Tour/Blog/Liên hệ.
@@ -56,6 +59,8 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] Hiển thị tên trạng thái tiếng Việt (lấy từ DB).
         -   [x] Chi tiết đơn hàng: Cải thiện bố cục, đưa tên tour xuống dưới ảnh tour.
         -   [x] Nút Duyệt/Hủy hoạt động ổn định thông qua GET link.
+    -   [x] **Việt hóa & Sửa lỗi giao diện:**
+        -   [x] Cập nhật lại toàn bộ nội dung tiếng Việt chuẩn cho các file JSP bị lỗi encoding.
 
 -   **Backend (User):**
     -   [x] **Xác Thực (Authentication):**
@@ -66,6 +71,9 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] `BookingPageServlet`: Yêu cầu đăng nhập trước khi đặt tour. Nếu chưa, chuyển hướng sang Login và lưu lại URL.
     -   [x] **Slide/Banner:**
         -   [x] Cập nhật các Servlet (`TourList`, `Blog`, `BlogDetail`, `Contact`, `Profile`, `TourDetail`) để lấy danh sách Active Slide.
+    -   [x] **Trang Tin Tức (Blog):**
+        -   [x] Cập nhật `HomeServlet` để lấy danh sách 3 bài viết mới nhất (`getLatestBlogs`).
+        -   [x] Tích hợp logic tăng lượt xem (`increaseViewCount`) vào `BlogDetailServlet`.
 
 -   **Frontend (User - Public):**
     -   [x] Template Travelin.
@@ -90,6 +98,8 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
         -   [x] Tạo `controller.user.BlogServlet` (List) & `BlogDetailServlet` (Detail).
         -   [x] Tạo giao diện `webapp/user/blog.jsp` & `blog_detail.jsp`.
         -   [x] Tính năng bình luận bài viết.
+        -   [x] **Hiển thị Trang Chủ:** Thêm section "Bài Viết Mới Nhất" vào trang chủ (Index).
+        -   [x] **Lượt xem:** Hiển thị icon mắt và số lượt xem ở tất cả các vị trí (Index, List, Detail).
     -   [x] **Trang Liên Hệ:**
         -   [x] Tạo `dal.user.ContactDAO`, `controller.user.ContactServlet`.
         -   [x] Tạo giao diện `webapp/user/contact.jsp`.
@@ -131,16 +141,16 @@ Tài liệu này ghi lại tiến độ, các chức năng đã hoàn thành và
 
 ## 4. Các Vấn Đề Đang Xử Lý
 
-### 🟢 Đã Xử Lý: Lỗi hiển thị Header Widget & Dark Mode (Ngày: 17/12/2025)
+### 🟢 Đã Xử Lý: Lỗi Font Tiếng Việt & Hiển thị Blog (Ngày: 17/12/2025)
 
 **Mô tả:**
-- Widget đồng hồ lỗi hiển thị ngày giờ và vị trí chưa hợp lý.
-- Chế độ Dark Mode bị lỗi FOUC (nháy đen khi reload).
-- Trang Profile hiển thị viền input xấu.
+- Các trang Admin (Customer, Review, Order, BlogReview...) bị lỗi font chữ tiếng Việt (ký tự lạ).
+- Trang chủ User chưa hiển thị bài viết Blog.
+- Thiếu hiển thị lượt xem bài viết.
 
 **Giải pháp:**
-1.  **Widget:** Chuyển sang vị trí giữa, sử dụng API thời tiết thật, sửa xung đột cú pháp JSP/JS.
-2.  **Dark Mode:** Tạo `theme_loader.jsp` chèn vào `<head>` để kiểm tra theme trước khi render. Thêm CSS transition global.
-3.  **Profile:** CSS override tắt `outline` mặc định của browser cho input.
+1.  **Fix Font:** Viết lại nội dung tiếng Việt chuẩn (UTF-8) cho toàn bộ file JSP Admin bị lỗi. Thêm `request.setCharacterEncoding("UTF-8")` vào tất cả Servlet Admin.
+2.  **Home Blog:** Cập nhật `HomeServlet` lấy danh sách Blog mới nhất (`getLatestBlogs`) và hiển thị section "Recent Articles" tại `index.jsp` theo template.
+3.  **View Count:** Thêm icon mắt và binding số liệu `${countView}` vào giao diện Index, Blog List và Blog Detail.
 
 **Trạng thái:** Đã hoàn thành.

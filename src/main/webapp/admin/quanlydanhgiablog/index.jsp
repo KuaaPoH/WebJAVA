@@ -1,4 +1,4 @@
-﻿<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %>
 <%@taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
@@ -9,7 +9,7 @@
     <%@include file="/admin/components/theme_loader.jsp" %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quáº£n LĂ½ BĂ¬nh Luáº­n Blog</title>
+    <title>Quản Lý Bình Luận Blog</title>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/images/favicon.png" sizes="16x16">
     <!-- google fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
@@ -34,16 +34,16 @@
         <div class="dashboard-main-body">
             
             <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
-                <h6 class="text-xl font-semibold mb-0 dark:text-white">Quáº£n LĂ½ BĂ¬nh Luáº­n Blog</h6>
+                <h6 class="text-xl font-semibold mb-0 dark:text-white">Quản Lý Bình Luận Blog</h6>
                 <ul class="flex items-center gap-[6px]">
                     <li class="font-medium">
                         <a href="${pageContext.request.contextPath}/admin" class="flex items-center gap-2 hover:text-primary-600 text-neutral-500 dark:text-neutral-400">
                             <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
-                            Trang Chá»§
+                            Trang Chủ
                         </a>
                     </li>
                     <li class="text-neutral-500 dark:text-neutral-400">-</li>
-                    <li class="text-neutral-500 dark:text-neutral-400 font-medium">BĂ¬nh Luáº­n Blog</li>
+                    <li class="text-neutral-500 dark:text-neutral-400 font-medium">Bình Luận Blog</li>
                 </ul>
             </div>
 
@@ -52,13 +52,13 @@
                 <div class="col-span-12">
                     <div class="card border-0 overflow-hidden">
                         <div class="card-header flex items-center justify-between">
-                            <h6 class="card-title mb-0 text-lg">Danh SĂ¡ch BĂ¬nh Luáº­n (${blogComments != null ? blogComments.size() : 0})</h6>
+                            <h6 class="card-title mb-0 text-lg">Danh Sách Bình Luận (${blogComments != null ? blogComments.size() : 0})</h6>
                         </div>
                         <div class="card-body">
                             
                             <c:if test="${empty blogComments}">
                                 <div class="p-4 text-center text-neutral-500 dark:text-neutral-400">
-                                    KhĂ´ng cĂ³ bĂ¬nh luáº­n blog nĂ o.
+                                    Không có bình luận blog nào.
                                 </div>
                             </c:if>
                             <c:if test="${not empty blogComments}">
@@ -67,12 +67,12 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col" class="text-neutral-800 dark:text-white">ID</th>
-                                                <th scope="col" class="text-neutral-800 dark:text-white">BĂ i Viáº¿t</th>
-                                                <th scope="col" class="text-neutral-800 dark:text-white">NgÆ°á»i DĂ¹ng</th>
-                                                <th scope="col" class="text-neutral-800 dark:text-white">Ná»™i Dung</th>
-                                                <th scope="col" class="text-neutral-800 dark:text-white">NgĂ y</th>
-                                                <th scope="col" class="text-neutral-800 dark:text-white">Tráº¡ng ThĂ¡i</th>
-                                                <th scope="col" class="text-neutral-800 dark:text-white">HĂ nh Äá»™ng</th>
+                                                <th scope="col" class="text-neutral-800 dark:text-white">Bài Viết</th>
+                                                <th scope="col" class="text-neutral-800 dark:text-white">Người Dùng</th>
+                                                <th scope="col" class="text-neutral-800 dark:text-white">Nội Dung</th>
+                                                <th scope="col" class="text-neutral-800 dark:text-white">Ngày</th>
+                                                <th scope="col" class="text-neutral-800 dark:text-white">Trạng Thái</th>
+                                                <th scope="col" class="text-neutral-800 dark:text-white">Hành Động</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -109,35 +109,35 @@
                                                                 <c:otherwise>bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400</c:otherwise>
                                                             </c:choose>
                                                             px-4 py-1 rounded-full font-medium text-xs">
-                                                            <c:if test="${c.active}">Hiá»ƒn thá»‹</c:if>
-                                                            <c:if test="${!c.active}">ÄĂ£ áº©n</c:if>
+                                                            <c:if test="${c.active}">Hiển thị</c:if>
+                                                            <c:if test="${!c.active}">Đã ẩn</c:if>
                                                         </span>
                                                     </td>
                                                     <td class="p-3">
                                                         <div class="flex items-center justify-center gap-2">
                                                             <button type="button" onclick="openViewModal(this)" 
-                                                                class="text-primary-600 hover:bg-primary-100 p-1 rounded" title="Xem chi tiáº¿t">
+                                                                class="text-primary-600 hover:bg-primary-100 p-1 rounded" title="Xem chi tiết">
                                                                 <iconify-icon icon="solar:eye-bold" width="20"></iconify-icon>
                                                             </button>
 
                                                             <c:if test="${c.active}">
                                                                 <a href="${pageContext.request.contextPath}/admin/blog-reviews?action=hide&id=${c.commentId}" 
                                                                    class="w-8 h-8 bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400 rounded-full inline-flex items-center justify-center" 
-                                                                   title="áº¨n">
+                                                                   title="Ẩn">
                                                                     <iconify-icon icon="solar:eye-closed-bold"></iconify-icon>
                                                                 </a>
                                                             </c:if>
                                                             <c:if test="${!c.active}">
                                                                 <a href="${pageContext.request.contextPath}/admin/blog-reviews?action=show&id=${c.commentId}" 
                                                                    class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center" 
-                                                                   title="Hiá»‡n">
+                                                                   title="Hiện">
                                                                     <iconify-icon icon="solar:eye-bold"></iconify-icon>
                                                                 </a>
                                                             </c:if>
                                                             <a href="${pageContext.request.contextPath}/admin/blog-reviews?action=delete&id=${c.commentId}" 
                                                                class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center" 
-                                                               title="XĂ³a"
-                                                               onclick="return confirm('Báº¡n cĂ³ cháº¯c cháº¯n muá»‘n xĂ³a bĂ¬nh luáº­n nĂ y?');">
+                                                               title="Xóa"
+                                                               onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này?');">
                                                                 <iconify-icon icon="solar:trash-bin-trash-bold"></iconify-icon>
                                                             </a>
                                                         </div>
@@ -159,7 +159,7 @@
         
         <footer class="d-footer">
             <div class="flex items-center justify-between gap-3">
-                <p class="mb-0">Â© 2025. All Rights Reserved.</p>
+                <p class="mb-0">© 2025. All Rights Reserved.</p>
             </div>
         </footer>
 
@@ -173,7 +173,7 @@
                 <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-neutral-700">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        Chi Tiáº¿t BĂ¬nh Luáº­n
+                        Chi Tiết Bình Luận
                     </h3>
                     <button type="button" onclick="closeViewModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-600 dark:hover:text-white">
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -186,11 +186,11 @@
                 <div class="p-4 md:p-5 space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div class="col-span-2">
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">BĂ i viáº¿t Blog</label>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Bài viết Blog</label>
                             <div id="modal-blog" class="p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"></div>
                         </div>
                         <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NgÆ°á»i dĂ¹ng</label>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Người dùng</label>
                             <div id="modal-user" class="p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"></div>
                         </div>
                         <div>
@@ -198,18 +198,18 @@
                             <div id="modal-email" class="p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"></div>
                         </div>
                         <div class="col-span-2">
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NgĂ y bĂ¬nh luáº­n</label>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ngày bình luận</label>
                             <div id="modal-date" class="p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"></div>
                         </div>
                         <div class="col-span-2">
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ná»™i dung chi tiáº¿t</label>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nội dung chi tiết</label>
                             <div id="modal-content" class="p-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-neutral-700 dark:border-neutral-600 dark:text-white min-h-[100px] whitespace-pre-wrap"></div>
                         </div>
                     </div>
                 </div>
                 <!-- Modal footer -->
                 <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-neutral-700">
-                    <button type="button" onclick="closeViewModal()" class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">ÄĂ³ng</button>
+                    <button type="button" onclick="closeViewModal()" class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Đóng</button>
                 </div>
             </div>
         </div>
@@ -228,10 +228,10 @@
         if (tableEl) {
             let table = new simpleDatatables.DataTable('#blog-table', {
                 labels: {
-                    placeholder: "TĂ¬m kiáº¿m...",
-                    perPage: "Hiá»ƒn thá»‹ má»¥c",
-                    noRows: "KhĂ´ng tĂ¬m tháº¥y dá»¯ liá»‡u",
-                    info: "Hiá»ƒn thá»‹ {start} Ä‘áº¿n {end} cá»§a {rows} má»¥c",
+                    placeholder: "Tìm kiếm...",
+                    perPage: "Hiển thị mục",
+                    noRows: "Không tìm thấy dữ liệu",
+                    info: "Hiển thị {start} đến {end} của {rows} mục",
                 },
                 perPage: 10
             });

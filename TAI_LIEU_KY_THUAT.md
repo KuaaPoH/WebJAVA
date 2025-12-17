@@ -454,3 +454,34 @@ Tính năng hiển thị thông tin thời gian thực và thời tiết tại H
     -   **Vị trí:** Căn giữa (absolute center) Header.
     -   **Responsive:** Ẩn trên Mobile để tiết kiệm diện tích.
     -   **Theme:** Hỗ trợ đổi màu icon (Vàng cam/Trắng) tương thích với Light/Dark mode.
+
+---
+
+## 16. 📝 XỬ LÝ FONT TIẾNG VIỆT & HIỂN THỊ BLOG
+
+### 16.1. Khắc phục lỗi Font chữ (Encoding)
+### Vấn đề
+- Các trang JSP của Admin (Customer, Review, Order...) bị lưu sai định dạng encoding khiến ký tự tiếng Việt hiển thị lỗi (dạng ký tự lạ).
+- Servlet chưa được thiết lập `request.setCharacterEncoding("UTF-8")` cho phương thức `doPost`, dẫn đến việc submit form chứa tiếng Việt bị lỗi.
+
+### Giải pháp
+1.  **JSP:** Viết lại toàn bộ nội dung tiếng Việt chuẩn (UTF-8) cho các file JSP bị lỗi. Đảm bảo thẻ `<%@page contentType="text/html" pageEncoding="UTF-8"%>` luôn nằm đầu file.
+2.  **Servlet:** Thêm dòng lệnh bắt buộc sau vào đầu phương thức `doPost` của tất cả Servlet Admin:
+    ```java
+    request.setCharacterEncoding("UTF-8");
+    ```
+
+### 16.2. Hiển thị Blog Trang Chủ & Lượt Xem
+### Yêu cầu
+- Trang chủ (Index) của người dùng cần hiển thị danh sách bài viết mới nhất.
+- Hiển thị số lượt xem bài viết (View Count) ở mọi nơi.
+
+### Triển khai
+1.  **Database & Model:** Sử dụng trường `CountView` (int) có sẵn trong bảng `tb_Blog`.
+2.  **DAO:** `BlogDAO.getLatestBlogs(int limit)` lấy danh sách bài viết active mới nhất.
+3.  **Frontend (Index):**
+    -   Sử dụng JSTL `<c:forEach>` để render danh sách 3 bài viết mới nhất.
+    -   Thêm icon mắt (`<i class="fa fa-eye"></i>`) và biến `${b.countView}`.
+4.  **Frontend (Blog List & Detail):**
+    -   Đồng bộ hiển thị view count tại `blog.jsp` và `blog_detail.jsp`.
+    -   Logic tăng view count nằm tại `BlogDetailServlet` (đã có sẵn).

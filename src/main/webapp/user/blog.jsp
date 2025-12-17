@@ -104,7 +104,8 @@
                                     </div>
                                     <div class="blog-content">
                                         <div class="blog-date">
-                                            <i class="fa fa-calendar-alt"></i> <fmt:formatDate value="${b.createdDate}" pattern="dd/MM/yyyy"/>
+                                            <span class="me-3"><i class="fa fa-calendar-alt"></i> <fmt:formatDate value="${b.createdDate}" pattern="dd/MM/yyyy"/></span>
+                                            <span><i class="fa fa-eye"></i> ${b.countView}</span>
                                         </div>
                                         <h3 class="title"><a href="${pageContext.request.contextPath}/blog-detail?id=${b.blogId}">${b.title}</a></h3>
                                         <p class="mb-2" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${b.description}</p>

@@ -278,7 +278,42 @@
             </div>
         </div>
     </section>
-    <!-- best tour Ends -->
+    <!-- our teams Ends -->
+
+    <!-- recent-articles starts -->
+    <section class="trending recent-articles pb-6 pt-5">
+        <div class="container">
+            <div class="section-title mb-6 w-75 mx-auto text-center">
+                <h4 class="mb-1 theme1">Bài Viết Mới Nhất</h4>
+                <h2 class="mb-1">Tin Tức & <span class="theme">Sự Kiện</span></h2>
+                <p>Cập nhật những thông tin du lịch, cẩm nang và trải nghiệm mới nhất.</p>
+            </div>
+            <div class="recent-articles-inner">
+                <div class="row">
+                    <c:forEach items="${latestBlogs}" var="b">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="trend-item box-shadow bg-white mb-4 rounded">
+                                <div class="trend-image">
+                                    <img src="${pageContext.request.contextPath}/assets/images/blogs/${b.image}" alt="${b.title}" onerror="this.src='${pageContext.request.contextPath}/assets/travelin/images/trending/trending10.jpg'">
+                                </div>
+                                <div class="trend-content-main p-4">
+                                    <div class="trend-content">
+                                        <div class="entry-meta d-flex align-items-center justify-content-between mb-2">
+                                            <span class="theme"><i class="fa fa-calendar"></i> <fmt:formatDate value="${b.createdDate}" pattern="dd/MM/yyyy"/></span>
+                                            <span class="text-muted"><i class="fa fa-eye"></i> ${b.countView}</span>
+                                        </div>
+                                        <h4 class="mb-0"><a href="${pageContext.request.contextPath}/blog-detail?id=${b.blogId}">${b.title}</a></h4>
+                                        <p class="mb-0 mt-2 text-truncate" style="max-height: 50px; overflow: hidden;">${b.description}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- recent-articles ends -->
 
     <!-- footer starts -->
     <footer class="pt-20 pb-4" style="background-image: url(${pageContext.request.contextPath}/assets/travelin/images/background_pattern.png);">

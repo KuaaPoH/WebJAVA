@@ -1,4 +1,4 @@
-﻿<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
@@ -8,7 +8,7 @@
     <%@include file="/admin/components/theme_loader.jsp" %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quáº£n LĂ½ Banner (Slide)</title>
+    <title>Quản Lý Banner (Slide)</title>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/images/favicon.png" sizes="16x16">
     <!-- google fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
@@ -33,12 +33,12 @@
         <div class="dashboard-main-body">
             
             <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
-                <h6 class="text-xl font-semibold mb-0 dark:text-white">Quáº£n LĂ½ Banner</h6>
+                <h6 class="text-xl font-semibold mb-0 dark:text-white">Quản Lý Banner</h6>
                 <ul class="flex items-center gap-[6px]">
                     <li class="font-medium">
                         <a href="${pageContext.request.contextPath}/admin" class="flex items-center gap-2 hover:text-primary-600 text-neutral-500 dark:text-neutral-400">
                             <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
-                            Trang Chá»§
+                            Trang Chủ
                         </a>
                     </li>
                     <li class="text-neutral-500 dark:text-neutral-400">-</li>
@@ -51,9 +51,9 @@
                 <div class="col-span-12">
                     <div class="card border-0 overflow-hidden">
                         <div class="card-header flex items-center justify-between">
-                            <h6 class="card-title mb-0 text-lg">Danh SĂ¡ch Banner</h6>
+                            <h6 class="card-title mb-0 text-lg">Danh Sách Banner</h6>
                             <a href="${pageContext.request.contextPath}/admin/quanlyslide?action=add" class="btn btn-primary-600 flex items-center gap-2">
-                                <iconify-icon icon="mingcute:add-line" class="text-xl"></iconify-icon> ThĂªm Má»›i
+                                <iconify-icon icon="mingcute:add-line" class="text-xl"></iconify-icon> Thêm Mới
                             </a>
                         </div>
                         <div class="card-body">
@@ -61,11 +61,11 @@
                                 <thead>
                                     <tr>
                                         <th scope="col" class="text-neutral-800 dark:text-white">ID</th>
-                                        <th scope="col" class="text-neutral-800 dark:text-white">HĂ¬nh áº¢nh</th>
-                                        <th scope="col" class="text-neutral-800 dark:text-white">TiĂªu Äá»</th>
+                                        <th scope="col" class="text-neutral-800 dark:text-white">Hình Ảnh</th>
+                                        <th scope="col" class="text-neutral-800 dark:text-white">Tiêu Đề</th>
                                         <th scope="col" class="text-neutral-800 dark:text-white">Alias</th>
-                                        <th scope="col" class="text-neutral-800 dark:text-white">Tráº¡ng ThĂ¡i</th>
-                                        <th scope="col" class="text-neutral-800 dark:text-white">HĂ nh Äá»™ng</th>
+                                        <th scope="col" class="text-neutral-800 dark:text-white">Trạng Thái</th>
+                                        <th scope="col" class="text-neutral-800 dark:text-white">Hành Động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -84,7 +84,7 @@
                                             <td>${s.alias}</td>
                                             <td>
                                                 <span class="${s.active ? 'bg-success-100 text-success-600 dark:bg-success-600/25 dark:text-success-400' : 'bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400'} px-4 py-1 rounded-full font-medium text-xs">
-                                                    ${s.active ? 'Hoáº¡t Ä‘á»™ng' : 'Táº¡m áº©n'}
+                                                    ${s.active ? 'Hoạt động' : 'Tạm ẩn'}
                                                 </span>
                                             </td>
                                             <td>
@@ -94,7 +94,7 @@
                                                     </a>
                                                     <a href="${pageContext.request.contextPath}/admin/quanlyslide?action=delete&id=${s.slideID}" 
                                                        class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center"
-                                                       onclick="return confirm('Báº¡n cĂ³ cháº¯c cháº¯n muá»‘n xĂ³a banner nĂ y?');">
+                                                       onclick="return confirm('Bạn có chắc chắn muốn xóa banner này?');">
                                                         <iconify-icon icon="solar:trash-bin-trash-bold"></iconify-icon>
                                                     </a>
                                                 </div>
@@ -113,7 +113,7 @@
         
         <footer class="d-footer">
             <div class="flex items-center justify-between gap-3">
-                <p class="mb-0">Â© 2025. All Rights Reserved.</p>
+                <p class="mb-0">© 2025. All Rights Reserved.</p>
             </div>
         </footer>
 
@@ -131,10 +131,10 @@
         if (tableEl) {
             let table = new simpleDatatables.DataTable('#slide-table', {
                 labels: {
-                    placeholder: "TĂ¬m kiáº¿m...",
-                    perPage: "Hiá»ƒn thá»‹ má»¥c",
-                    noRows: "KhĂ´ng tĂ¬m tháº¥y dá»¯ liá»‡u",
-                    info: "Hiá»ƒn thá»‹ {start} Ä‘áº¿n {end} cá»§a {rows} má»¥c",
+                    placeholder: "Tìm kiếm...",
+                    perPage: "Hiển thị mục",
+                    noRows: "Không tìm thấy dữ liệu",
+                    info: "Hiển thị {start} đến {end} của {rows} mục",
                 },
                 perPage: 10
             });
@@ -143,4 +143,3 @@
 
 </body>
 </html>
-
