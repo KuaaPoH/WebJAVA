@@ -1,325 +1,317 @@
-# TÀI LIỆU CHI TIẾT HỆ THỐNG QUẢN TRỊ (ADMIN)
+# TÀI LIỆU KỸ THUẬT CHI TIẾT HỆ THỐNG QUẢN TRỊ (DEEP DIVE)
 
-Tài liệu này phân tích chi tiết mã nguồn (Source Code), luồng dữ liệu (Data Flow) và logic nghiệp vụ của từng chức năng trong trang Admin theo mô hình MVC.
-
----
-
-## 1. TỔNG QUAN KIẾN TRÚC
-*   **DAO (Data Access Object - Model):** Chuyên trách giao tiếp với SQL Server. Chứa các câu lệnh SQL.
-*   **Servlet (Controller):** Nhận yêu cầu từ người dùng, gọi DAO xử lý, và điều hướng kết quả.
-*   **JSP (View):** Hiển thị dữ liệu lên trình duyệt sử dụng JSTL/EL.
+Tài liệu này cung cấp giải thích chi tiết **từng dòng lệnh (Line-by-Line)** cho các module quan trọng nhất trong hệ thống Admin. Mục tiêu giúp lập trình viên hiểu sâu về logic xử lý, luồng dữ liệu và các kỹ thuật Java Web (Servlet/JSP/JDBC) được sử dụng.
 
 ---
 
-## 2. PHÂN TÍCH CHI TIẾT TỪNG MODULE
+## 1. MODULE BẢO MẬT & PHÂN QUYỀN (`AdminFilter`)
 
-### 2.1. MODULE QUẢN LÝ TOUR (`QuanLyTour`)
+File: `src/main/java/controller/filter/AdminFilter.java`
 
-Chức năng cốt lõi và phức tạp nhất vì xử lý thông tin sản phẩm và **Upload ảnh**.
+Đây là "cánh cổng" đầu tiên mà mọi request vào `/admin/*` đều phải đi qua.
 
-#### A. Lớp DAO (`dal.admin.TourDAO.java`)
-**Chức năng:** Thao tác với bảng `tb_Tour`.
-
-**1. Lấy danh sách (`getAllTours`):
 ```java
-public List<Tour> getAllTours() {
-    List<Tour> list = new ArrayList<>();
-    // SQL: Lấy tất cả cột, sắp xếp ID giảm dần (mới nhất lên đầu)
-    String sql = "SELECT * FROM tb_Tour ORDER BY TourId DESC";
+@WebFilter(filterName = "AdminFilter", urlPatterns = {"/admin/*"}) 
+// @WebFilter: Annotation khai báo Filter.
+// urlPatterns = {"/admin/*"}: Mọi URL bắt đầu bằng /admin/ đều bị Filter này chặn lại xử lý trước.
+
+public class AdminFilter implements Filter { 
     
-    try {
-        PreparedStatement st = connection.prepareStatement(sql);
-        ResultSet rs = st.executeQuery(); // Thực thi câu lệnh
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException { 
         
-        while (rs.next()) { // Duyệt qua từng dòng kết quả
-            Tour t = new Tour();
+        // 1. Ép kiểu request/response về dạng HTTP để dùng các phương thức của Web (session, redirect)
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
+        // 2. Lấy Session hiện tại.
+        // getSession(false): Nếu chưa có session thì trả về null (không tạo mới).
+        // Dùng false để tối ưu hiệu năng và kiểm tra chính xác trạng thái đăng nhập.
+        HttpSession session = httpRequest.getSession(false);
+
+        // 3. Kiểm tra logic đăng nhập
+        // Điều kiện: Session phải tồn tại (khác null) VÀ attribute "admin" phải có dữ liệu.
+        // Attribute "admin" được set tại LoginServlet khi đăng nhập thành công.
+        boolean isLoggedIn = (session != null && session.getAttribute("admin") != null);
+
+        if (isLoggedIn) { 
+            // 4. Kiểm tra phân quyền (Authorization)
+            Account adminAccount = (Account) session.getAttribute("admin");
+            
+            // Giả định: RoleId = 1 là Admin, RoleId = 2 là Staff.
+            if (adminAccount.getRoleId() == 1 || adminAccount.getRoleId() == 2) { 
+                 // Hợp lệ: Cho phép request đi tiếp đến Servlet đích (chain.doFilter)
+                 chain.doFilter(request, response);
+            } else { 
+                 // Đã đăng nhập nhưng không phải Admin (ví dụ User thường mò vào link admin)
+                 // Redirect về trang Login kèm thông báo lỗi
+                 httpResponse.sendRedirect(httpRequest.getContextPath() + "/login?error=unauthorized");
+            }
+        } else { 
+            // 5. Chưa đăng nhập
+            // Redirect ngay lập tức về trang Login
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
+        }
+    }
+}
+```
+
+---
+
+## 2. MODULE QUẢN LÝ TOUR (Sản phẩm & Upload Ảnh)
+
+### 2.1. Lớp DAO (`dal.admin.TourDAO.java`)
+
+Chịu trách nhiệm tương tác trực tiếp với Database.
+
+**Hàm `getAllTours()` - Lấy danh sách:**
+
+```java
+public List<Tour> getAllTours() { 
+    List<Tour> list = new ArrayList<>(); // Khởi tạo list rỗng để chứa kết quả
+    String sql = "SELECT * FROM tb_Tour"; // Query đơn giản lấy toàn bộ bảng
+    try { 
+        // connection: Biến kế thừa từ lớp cha DBContext, đã mở kết nối SQL Server
+        PreparedStatement st = connection.prepareStatement(sql);
+        
+        // Thực thi câu lệnh SQL, trả về ResultSet (bảng kết quả tạm thời)
+        ResultSet rs = st.executeQuery();
+        
+        // rs.next(): Di chuyển con trỏ xuống từng dòng. Trả về false nếu hết dữ liệu.
+        while (rs.next()) { 
+            Tour t = new Tour(); // Tạo object mới cho mỗi dòng
+            
+            // Map dữ liệu từ cột SQL sang thuộc tính Java
+            // Lưu ý: Tên cột trong getString() phải khớp chính xác với DB
             t.setTourId(rs.getInt("TourId"));
             t.setTitle(rs.getString("Title"));
-            t.setPrice(rs.getInt("Price"));
-            t.setImage(rs.getString("Image")); // Lưu ý: Chỉ lấy tên file (vd: tour1.jpg)
-            t.setActive(rs.getBoolean("IsActive"));
-            list.add(t);
+            // ... (các dòng set khác tương tự)
+            t.setImage(rs.getString("Image")); // Chỉ lấy tên file (vd: "abc.jpg"), không lấy đường dẫn full
+            
+            list.add(t); // Thêm object vào list
         }
+    } catch (SQLException e) { 
+        System.out.println(e); // In lỗi ra console nếu SQL sai cú pháp hoặc mất kết nối
+    }
+    return list; // Trả về danh sách (có thể rỗng nhưng không bao giờ null)
+}
+```
+
+**Hàm `toggleStatus(int id)` - Kỹ thuật XOR Bitwise:**
+
+```java
+public void toggleStatus(int id) { 
+    // Logic: Đảo trạng thái Ẩn (0) <-> Hiện (1) mà không cần Select trước.
+    // CASE WHEN: Cú pháp chuẩn SQL (If-Else).
+    // Nếu đang là 1 thì set thành 0, ngược lại thì set thành 1.
+    String sql = "UPDATE [dbo].[tb_Tour] SET [IsActive] = CASE WHEN [IsActive] = 1 THEN 0 ELSE 1 END WHERE TourId = ?";
+    
+    // Cách tối ưu hơn (nếu DB hỗ trợ toán tử Bitwise ^):
+    // String sql = "UPDATE tb_Tour SET IsActive = IsActive ^ 1 WHERE TourId = ?";
+    
+    try { 
+        PreparedStatement st = connection.prepareStatement(sql);
+        st.setInt(1, id); // Gán tham số id vào dấu ? đầu tiên
+        st.executeUpdate(); // Dùng executeUpdate cho INSERT/UPDATE/DELETE (trả về số dòng bị ảnh hưởng)
     } catch (SQLException e) { ... }
+}
+```
+
+### 2.2. Lớp Controller (`controller.admin.TourServlet.java`)
+
+**Cấu hình Upload File (`@MultipartConfig`):**
+
+```java
+@WebServlet(name = "TourServlet", urlPatterns = {"/admin/quanlytour"})
+@MultipartConfig // [BẮT BUỘC] Annotation này báo cho Container biết Servlet này có xử lý file upload
+public class TourServlet extends HttpServlet { ... }
+```
+
+**Hàm `insertTour` - Xử lý Upload "Dual Save" (Lưu kép):**
+
+```java
+private void insertTour(HttpServletRequest request, HttpServletResponse response) 
+        throws IOException, ServletException { 
+    
+    // 1. Nhận các trường text thông thường
+    String title = request.getParameter("title");
+    // ...
+    boolean isActive = "on".equals(request.getParameter("active")); // Checkbox trả về "on" nếu được tick
+
+    // 2. Xử lý File Ảnh
+    Part filePart = request.getPart("imageFile"); // Lấy part file từ form (name="imageFile")
+    // Lấy tên file gốc (vd: "mua-thu-ha-noi.jpg")
+    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+    
+    if (fileName != null && !fileName.isEmpty()) { 
+        
+        // --- GIAI ĐOẠN 1: Lưu vào thư mục Deploy (Server đang chạy) ---
+        // Mục đích: Để ảnh hiển thị NGAY LẬP TỨC trên trình duyệt mà không cần restart server.
+        // getRealPath: Trả về đường dẫn vật lý thực tế của folder webapp trên ổ cứng server
+        String deployedUploadPath = getServletContext().getRealPath("/assets/images/products");
+        Path deployedPath = Paths.get(deployedUploadPath, fileName);
+        
+        // Tạo thư mục nếu chưa có
+        Files.createDirectories(deployedPath.getParent()); 
+        // Ghi file từ luồng input (InputStream) ra ổ cứng
+        try (InputStream input = filePart.getInputStream()) { 
+            Files.copy(input, deployedPath, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        // --- GIAI ĐOẠN 2: Lưu vào thư mục Source Code (Backup) ---
+        // Mục đích: Để khi Re-build/Redeploy dự án, ảnh không bị mất (vì folder Deploy sẽ bị xóa sạch khi build lại).
+        // Lưu ý: Đường dẫn này HARDCODE theo máy developer, cần sửa khi deploy thật.
+        try { 
+            String sourceProjectPath = "D:\\hai\\WebJAVA"; // Root dự án
+            String sourceUploadPath = Paths.get(sourceProjectPath, "src", "main", "webapp", "assets", "images", "products").toString();
+            Path sourcePath = Paths.get(sourceUploadPath, fileName);
+            
+            Files.createDirectories(sourcePath.getParent());
+            // Copy file từ folder Deploy sang folder Source
+            Files.copy(deployedPath, sourcePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) { ... }
+    }
+
+    // 3. Gọi DAO lưu thông tin vào DB
+    Tour newTour = new Tour();
+    newTour.setImage(fileName); // Chỉ lưu tên file vào DB
+    // ... set các thuộc tính khác ...
+    
+    dao.insert(newTour);
+    
+    // 4. Redirect về trang danh sách (PRG Pattern: Post-Redirect-Get)
+    // Để tránh việc người dùng F5 làm gửi lại form (Duplicate submission)
+    response.sendRedirect(request.getContextPath() + "/admin/quanlytour");
+}
+```
+
+---
+
+## 3. MODULE QUẢN LÝ ĐƠN HÀNG (Logic Phức tạp & JOIN)
+
+### 3.1. Lớp DAO (`dal.admin.OrderDAO.java`)
+
+**Hàm `getAllOrders` - Kỹ thuật SQL JOIN:**
+
+```java
+public List<Order> getAllOrders(Integer statusId) { 
+    // Câu lệnh SQL nối 2 bảng: tb_Order và tb_OrderStatus
+    // Mục đích: Lấy ra tên trạng thái (Name) thay vì chỉ lấy ID vô nghĩa.
+    String sql = "SELECT o.*, os.Name AS OrderStatusName " + 
+                 "FROM tb_Order o " + 
+                 "JOIN tb_OrderStatus os ON o.OrderStatusId = os.OrderStatusId ";
+    
+    // Dynamic Query: Chỉ thêm điều kiện WHERE nếu người dùng có chọn filter
+    if (statusId != null) { 
+        sql += "WHERE o.OrderStatusId = ? ";
+    }
+    
+    sql += "ORDER BY o.CreatedDate DESC"; // Sắp xếp mới nhất lên đầu
+    
+    // ... Thực thi query ...
+    
+    while (rs.next()) { 
+        Order order = new Order();
+        // Map các cột cơ bản
+        order.setOrderId(rs.getInt("OrderId"));
+        
+        // Map cột từ bảng JOIN (Quan trọng)
+        // OrderStatusName là cột ảo được tạo ra từ "os.Name AS ..." trong câu SQL
+        order.setStatusName(rs.getString("OrderStatusName")); 
+        
+        list.add(order);
+    }
     return list;
 }
 ```
 
-**2. Ẩn/Hiện Tour (`toggleStatus`):
-```java
-public void toggleStatus(int id) {
-    // Logic: Dùng phép XOR (^) để đảo ngược bit. 
-    // Nếu đang 1 (Hiện) ^ 1 = 0 (Ẩn). Nếu đang 0 (Ẩn) ^ 1 = 1 (Hiện).
-    // Cách này tối ưu hơn việc phải Select ra check rồi mới Update.
-    String sql = "UPDATE tb_Tour SET IsActive = IsActive ^ 1 WHERE TourId = ?";
-    PreparedStatement st = connection.prepareStatement(sql);
-    st.setInt(1, id);
-    st.executeUpdate();
-}
-```
+**Hàm `getOrderById` - Lấy Master-Detail:**
+Logic ở đây phức tạp hơn vì cần lấy 1 Đơn hàng (Master) và danh sách các Chi tiết đơn hàng (Detail/Items).
 
-#### B. Lớp Servlet (`controller.admin.TourServlet.java`)
-**Chức năng:** Xử lý file upload và điều phối.
-
-**1. Cấu hình & Xử lý tiếng Việt:
 ```java
-@MultipartConfig // [BẮT BUỘC] Để Servlet có thể nhận file từ form
-public class TourServlet extends HttpServlet {
-    protected void doPost(...) {
-        // [QUAN TRỌNG] Phải đặt đầu tiên để đọc đúng tiếng Việt từ form
-        request.setCharacterEncoding("UTF-8"); 
+public Order getOrderById(int orderId) { 
+    // 1. Query lấy thông tin Đơn hàng (Master)
+    String sqlOrder = "SELECT ... FROM tb_Order ... WHERE OrderId = ?";
+    
+    // 2. Query lấy thông tin Chi tiết (Detail) + Thông tin Tour (Product)
+    // Cần JOIN với tb_Tour để lấy Tên Tour và Ảnh Tour
+    String sqlOrderDetail = "SELECT od.*, t.Title AS TourTitle, t.Image AS TourImage " + 
+                            "FROM tb_OrderDetail od " + 
+                            "JOIN tb_Tour t ON od.TourId = t.TourId " + 
+                            "WHERE od.OrderId = ?";
+                            
+    // ... Thực thi sqlOrder trước ...
+    if (rsOrder.next()) { 
+        // Map thông tin Master
+        order = new Order();
         // ...
+        
+        // ... Thực thi sqlOrderDetail ...
+        List<OrderDetail> details = new ArrayList<>();
+        while (rsDetail.next()) { 
+            OrderDetail od = new OrderDetail();
+            // Map thông tin Detail
+            od.setTourName(rsDetail.getString("TourTitle")); // Lấy tên tour từ bảng Tour
+            details.add(od);
+        }
+        
+        // Gán list Detail vào object Master
+        order.setOrderDetails(details);
     }
+    return order;
 }
 ```
 
-**2. Logic Upload Ảnh (Dual Save):
-```java
-private void insertTour(...) {
-    // 1. Lấy dữ liệu text
-    String title = request.getParameter("title");
-    
-    // 2. Lấy file ảnh
-    Part filePart = request.getPart("imageFile"); // "imageFile" là name bên JSP
-    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-    
-    // 3. Lưu vào thư mục Deploy (Server) - Để hiển thị ngay
-    String deployPath = getServletContext().getRealPath("/assets/images/products");
-    filePart.write(deployPath + File.separator + fileName);
+### 3.2. Lớp Servlet (`controller.admin.OrderServlet.java`)
 
-    // 4. Lưu vào thư mục Source Code (Local) - Để giữ file vĩnh viễn
-    // (Lưu ý: Đường dẫn này đang hardcode, cần cấu hình đúng với máy dev)
-    String sourcePath = "D:\\hai\\WebJAVA\\src\\main\\webapp\\assets\\images\\products";
-    // Code copy file từ deployPath sang sourcePath...
-
-    // 5. Gọi DAO lưu thông tin vào DB
-    Tour t = new Tour(title, ... fileName ...); // Chỉ lưu tên file
-    dao.insert(t);
-    
-    // 6. Redirect để tránh resubmit form khi F5
-    response.sendRedirect("quanlytour");
-}
-```
-
-#### C. Lớp JSP (`admin/quanlytour/index.jsp`)
-**Chức năng:** Hiển thị danh sách.
-
-```jsp
-<!-- Form tìm kiếm / Bảng dữ liệu -->
-<c:forEach items="${listT}" var="t">
-    <tr>
-        <td>${t.tourId}</td>
-        <td>
-            <!-- Hiển thị ảnh: ContextPath + Đường dẫn cứng + Tên file từ DB -->
-            <!-- onerror: Fallback nếu ảnh bị lỗi -->
-            <img src="${pageContext.request.contextPath}/assets/images/products/${t.image}" 
-                 onerror="this.src='.../no-image.png'" width="50">
-        </td>
-        <td>${t.title}</td>
-        <td>
-            <!-- Logic hiển thị trạng thái bằng màu sắc -->
-            <c:if test="${t.active}">
-                <span class="text-success">Hiện</span>
-            </c:if>
-            <c:if test="${!t.active}">
-                <span class="text-danger">Ẩn</span>
-            </c:if>
-        </td>
-        <td>
-            <!-- Nút Toggle gọi qua GET request -->
-            <a href="quanlytour?action=toggle&id=${t.tourId}">Ẩn/Hiện</a>
-        </td>
-    </tr>
-</c:forEach>
-```
-
----
-
-### 2.2. MODULE QUẢN LÝ ĐƠN HÀNG (`QuanLyDonHang`)
-
-Chức năng xử lý nghiệp vụ bán hàng, cần JOIN nhiều bảng.
-
-#### A. Lớp DAO (`dal.admin.OrderDAO.java`)
-**Chức năng:** Tổng hợp dữ liệu đơn hàng.
+**Xử lý Filter và Action:**
 
 ```java
-public List<Order> getAllOrders(Integer statusId) {
-    // [SQL JOIN]: Kết nối 3 bảng để lấy đầy đủ thông tin hiển thị
-    // tb_Order (o): Thông tin đơn
-    // tb_Customer (c): Lấy Fullname khách hàng
-    // tb_OrderStatus (s): Lấy StatusName (Tiếng Việt)
-    String sql = "SELECT o.*, c.Fullname, s.StatusName " +
-                 "FROM tb_Order o " +
-                 "JOIN tb_Customer c ON o.CustomerId = c.CustomerId " +
-                 "JOIN tb_OrderStatus s ON o.OrderStatusId = s.OrderStatusId ";
-                 
-    // [Dynamic Query]: Nếu có lọc theo trạng thái thì cộng thêm điều kiện WHERE
-    if (statusId != null) {
-        sql += " WHERE o.OrderStatusId = " + statusId;
-    }
-    
-    // ... Thực thi query ...
-    // Khi map dữ liệu:
-    // order.setCustomerName(rs.getString("Fullname")); // Set vào trường phụ
-    // order.setStatusName(rs.getString("StatusName")); // Set vào trường phụ
-}
-```
-
-#### B. Lớp Servlet (`controller.admin.OrderServlet.java`)
-**Chức năng:** Xử lý lọc và cập nhật trạng thái.
-
-```java
-// GET Method
-protected void doGet(...) {
+protected void doGet(...) { 
     String action = request.getParameter("action");
     
-    // 1. Chức năng Lọc (Filter)
-    if (action.equals("list")) {
-        String statusStr = request.getParameter("status"); // Lấy param từ URL (?status=5)
-        Integer statusId = (statusStr != null) ? Integer.parseInt(statusStr) : null;
+    // Case 1: Liệt kê danh sách (mặc định)
+    if (action == null || action.equals("list")) { 
+        // Lấy tham số status từ URL (vd: orders?status=5)
+        String statusStr = request.getParameter("status");
+        Integer statusId = null;
         
-        List<Order> list = dao.getAllOrders(statusId);
-        request.setAttribute("orders", list); // Đẩy data sang JSP
-        request.getRequestDispatcher("index.jsp").forward(request, response);
-    }
+        // Parse String sang Integer an toàn
+        if (statusStr != null && !statusStr.isEmpty()) { 
+            try { 
+                statusId = Integer.parseInt(statusStr);
+            } catch (NumberFormatException e) {} 
+        }
+
+        // Gọi DAO
+        List<Order> orders = orderDAO.getAllOrders(statusId);
+        
+        // Đẩy dữ liệu sang JSP
+        request.setAttribute("orders", orders);
+        request.setAttribute("currentStatus", statusId); // Để JSP biết đang filter theo cái gì mà highlight nút
+        
+        // Forward sang trang giao diện
+        request.getRequestDispatcher("/admin/quanlydonhang/index.jsp").forward(request, response);
+    } 
     
-    // 2. Chức năng Cập nhật trạng thái nhanh (Action Button)
-    else if (action.equals("updateStatus")) {
+    // Case 2: Cập nhật trạng thái nhanh
+    else if (action.equals("updateStatus")) { 
         int orderId = Integer.parseInt(request.getParameter("orderId"));
         int statusId = Integer.parseInt(request.getParameter("statusId"));
         
-        dao.updateOrderStatus(orderId, statusId); // 6=Duyệt, 7=Hủy
-        response.sendRedirect("orders?action=list"); // Load lại trang
-    }
-}
-```
-
-#### C. Lớp JSP (`admin/quanlydonhang/index.jsp`)
-**Chức năng:** Hiển thị format dữ liệu.
-
-```jsp
-<!-- Import thư viện Format -->
-<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<!-- 1. Định dạng tiền tệ (1000000 -> 1,000,000) -->
-<fmt:formatNumber value="${order.totalAmount}" pattern="#,###"/> đ
-
-<!-- 2. Định dạng ngày tháng (Date Object -> String dd/MM/yyyy) -->
-<fmt:formatDate value="${order.createdDate}" pattern="dd/MM/yyyy HH:mm"/>
-
-<!-- 3. Badge trạng thái -->
-<!-- Sử dụng StatusId để quyết định màu (Vàng/Xanh/Đỏ/Tím) -->
-<span class="
-    <c:choose>
-        <c:when test="${order.orderStatusId == 5}">bg-warning</c:when> <!-- Chờ -->
-        <c:when test="${order.orderStatusId == 6}">bg-success</c:when> <!-- Duyệt -->
-        <c:when test="${order.orderStatusId == 7}">bg-danger</c:when>  <!-- Hủy -->
-        <c:when test="${order.orderStatusId == 1008}">bg-purple</c:when> <!-- Yêu cầu hủy -->
-    </c:choose>
-">
-    ${order.statusName} <!-- Tên tiếng Việt lấy từ DB -->
-</span>
-```
-
----
-
-### 2.3. MODULE QUẢN LÝ SLIDE/BANNER (`QuanLySlide`)
-
-Chức năng tạo URL thân thiện (SEO Friendly).
-
-#### A. Lớp Servlet (`controller.admin.SlideServlet.java`)
-**Chức năng:** Tự động tạo Alias (Slug).
-
-```java
-protected void doPost(...) {
-    String title = request.getParameter("title"); // vd: "Du Lịch Hè"
-    String alias = request.getParameter("alias");
-    
-    // Nếu người dùng lười không nhập Alias, hệ thống tự tạo
-    if (alias == null || alias.isEmpty()) {
-        alias = toSlug(title); // Kết quả: "du-lich-he"
-    }
-    // ... Lưu vào DB ...
-}
-
-// Hàm Utility: Chuyển tiếng Việt có dấu thành không dấu gạch ngang
-public static String toSlug(String input) {
-    // Bước 1: Chuẩn hóa NFD để tách dấu (dấu sắc, huyền...) ra khỏi ký tự gốc
-    String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-    
-    // Bước 2: Dùng Regex xóa sạch các dấu vừa tách
-    Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-    String noAccent = pattern.matcher(normalized).replaceAll("");
-    
-    // Bước 3: Chuyển thường và thay khoảng trắng bằng "-"
-    return noAccent.toLowerCase().replaceAll(" ", "-");
-}
-```
-
----
-
-### 2.4. MODULE QUẢN LÝ ĐÁNH GIÁ (`QuanLyDanhGia`)
-
-Chức năng xem nội dung chi tiết mà không làm vỡ giao diện bảng.
-
-#### A. Lớp JSP (`admin/quanlydanhgia/index.jsp`)
-**Chức năng:** UI Modal Popup.
-
-```jsp
-<!-- 1. Hiển thị cắt gọn trên bảng -->
-<!-- Class truncate của Tailwind sẽ thêm dấu "..." nếu dài quá -->
-<div class="truncate max-w-[200px]" title="${r.detail}">
-    ${r.detail}
-</div>
-
-<!-- 2. Nút Xem chi tiết -->
-<button onclick="openViewModal(this)">Xem</button>
-
-<!-- 3. Dữ liệu ẩn (Hidden Data) trong dòng -->
-<span class="data-content hidden">${r.detail}</span>
-
-<!-- 4. Script xử lý Modal -->
-<script>
-function openViewModal(btn) {
-    // Tìm dòng (tr) chứa nút bấm
-    const row = btn.closest('tr');
-    // Lấy nội dung full từ thẻ ẩn
-    const content = row.querySelector('.data-content').innerText;
-    // Gán vào Modal và hiện lên
-    document.getElementById('modal-content').innerText = content;
-    document.getElementById('viewModal').classList.remove('hidden');
-}
-</script>
-```
-
----
-
-## 3. CÁC THÀNH PHẦN KỸ THUẬT CHUNG
-
-### 3.1. Sidebar Component (`admin/components/sidebar.jsp`)
-**Mục đích:** Tái sử dụng code menu cho tất cả các trang Admin.
-
-```jsp
-<!-- Logic Active Menu: Kiểm tra xem URL hiện tại có chứa link của menu không -->
-<li class="${request.getRequestURI().contains('/admin/quanlytour') ? 'active' : ''}">
-    <a href="quanlytour">Quản Lý Tour</a>
-</li>
-```
-
-### 3.2. AdminFilter (`controller.filter.AdminFilter`)
-**Mục đích:** Bảo mật, chặn truy cập trái phép.
-
-```java
-@WebFilter(urlPatterns = {"/admin/*"}) // Chặn mọi link bắt đầu bằng /admin/
-public void doFilter(...) {
-    HttpSession session = request.getSession();
-    // Kiểm tra session "admin" (được tạo lúc đăng nhập)
-    if (session.getAttribute("admin") == null) {
-        // Nếu chưa đăng nhập -> Đá về trang Login
-        response.sendRedirect("../login");
-    } else {
-        // Nếu ok -> Cho phép đi tiếp vào Servlet/JSP đích
-        chain.doFilter(request, response);
+        // Gọi DAO update
+        orderDAO.updateOrderStatus(orderId, statusId);
+        
+        // Redirect thông minh:
+        // Nếu đang ở trang list -> Quay lại list
+        // Nếu đang xem chi tiết -> Quay lại chi tiết
+        String from = request.getParameter("from");
+        if ("list".equals(from)) { 
+            response.sendRedirect("orders?action=list");
+        } else { 
+            response.sendRedirect("orders?action=view&id=" + orderId);
+        }
     }
 }
 ```
