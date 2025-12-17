@@ -1,13 +1,14 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+﻿<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %> 
 
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" >
 
 <head>
+    <%@include file="/admin/components/theme_loader.jsp" %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Mới Menu</title>
+    <title>ThĂªm Má»›i Menu</title>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/images/favicon.png" sizes="16x16">
     
     <!-- google fonts -->
@@ -32,16 +33,16 @@
         <div class="dashboard-main-body">
             
             <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
-                <h6 class="text-xl font-semibold mb-0 dark:text-white">Thêm Menu Mới</h6>
+                <h6 class="text-xl font-semibold mb-0 dark:text-white">ThĂªm Menu Má»›i</h6>
                 <ul class="flex items-center gap-[6px]">
                     <li class="font-medium">
                         <a href="${pageContext.request.contextPath}/admin/quanlymenu" class="flex items-center gap-2 hover:text-primary-600 text-neutral-500 dark:text-neutral-400">
                            <iconify-icon icon="material-symbols:menu-outline" class="icon text-lg"></iconify-icon>
-                            Danh Sách Menu
+                            Danh SĂ¡ch Menu
                         </a>
                     </li>
                     <li class="text-neutral-500 dark:text-neutral-400">-</li>
-                    <li class="text-neutral-500 dark:text-neutral-400 font-medium">Thêm Mới</li>
+                    <li class="text-neutral-500 dark:text-neutral-400 font-medium">ThĂªm Má»›i</li>
                 </ul>
             </div>
 
@@ -50,7 +51,7 @@
                 <div class="col-span-12">
                     <div class="card border-0">
                         <div class="card-header">
-                            <h5 class="text-lg font-semibold mb-0">Thông Tin Menu</h5>
+                            <h5 class="text-lg font-semibold mb-0">ThĂ´ng Tin Menu</h5>
                         </div>
                         <div class="card-body">
                             <form action="${pageContext.request.contextPath}/admin/quanlymenu" method="post">
@@ -58,8 +59,8 @@
                                 
                                 <div class="grid grid-cols-12 gap-4">
                                     <div class="col-span-12 md:col-span-6">
-                                        <label class="form-label">Tiêu Đề</label>
-                                        <input type="text" name="title" class="form-control" placeholder="Tiêu đề hiển thị..." required>
+                                        <label class="form-label">TiĂªu Äá»</label>
+                                        <input type="text" name="title" class="form-control" placeholder="TiĂªu Ä‘á» hiá»ƒn thá»‹..." required>
                                     </div>
                                     <div class="col-span-12 md:col-span-6">
                                         <label class="form-label">Alias</label>
@@ -67,17 +68,17 @@
                                     </div>
 
                                     <div class="col-span-12 md:col-span-4">
-                                        <label class="form-label">Vị Trí</label>
-                                        <input type="number" name="position" class="form-control" placeholder="Thứ tự hiển thị" value="1" required>
+                                        <label class="form-label">Vá»‹ TrĂ­</label>
+                                        <input type="number" name="position" class="form-control" placeholder="Thá»© tá»± hiá»ƒn thá»‹" value="1" required>
                                     </div>
                                     <div class="col-span-12 md:col-span-4">
-                                        <label class="form-label">Cấp</label>
-                                        <input type="number" name="levels" class="form-control" placeholder="Cấp menu" value="1" required>
+                                        <label class="form-label">Cáº¥p</label>
+                                        <input type="number" name="levels" class="form-control" placeholder="Cáº¥p menu" value="1" required>
                                     </div>
                                     <div class="col-span-12 md:col-span-4">
                                         <label class="form-label">Menu Cha</label>
                                         <select name="parentId" class="form-control dark:bg-neutral-700 dark:text-white">
-                                            <option value="0">-- Không có (Là menu gốc) --</option>
+                                            <option value="0">-- KhĂ´ng cĂ³ (LĂ  menu gá»‘c) --</option>
                                             <c:forEach items="${allMenus}" var="m">
                                                 <option value="${m.menuId}">${m.title}</option>
                                             </c:forEach>
@@ -87,13 +88,13 @@
                                     <div class="col-span-12">
                                         <div class="flex items-center gap-2">
                                             <input class="form-check-input rounded-full" type="checkbox" name="active" value="on" id="activeCheck" checked>
-                                            <label class="form-check-label" for="activeCheck">Kích hoạt (Hiển thị ngay)</label>
+                                            <label class="form-check-label" for="activeCheck">KĂ­ch hoáº¡t (Hiá»ƒn thá»‹ ngay)</label>
                                         </div>
                                     </div>
                                     
                                     <div class="col-span-12 flex gap-3 mt-4">
-                                        <button type="submit" class="btn btn-primary-600">Lưu Menu</button>
-                                        <a href="${pageContext.request.contextPath}/admin/quanlymenu" class="btn btn-danger-600">Hủy Bỏ</a>
+                                        <button type="submit" class="btn btn-primary-600">LÆ°u Menu</button>
+                                        <a href="${pageContext.request.contextPath}/admin/quanlymenu" class="btn btn-danger-600">Há»§y Bá»</a>
                                     </div>
                                 </div>
                             </form>
@@ -107,7 +108,7 @@
         
         <footer class="d-footer">
             <div class="flex items-center justify-between gap-3">
-                <p class="mb-0">© 2025. All Rights Reserved.</p>
+                <p class="mb-0">Â© 2025. All Rights Reserved.</p>
             </div>
         </footer>
 
@@ -122,3 +123,4 @@
 </body>
 
 </html>
+

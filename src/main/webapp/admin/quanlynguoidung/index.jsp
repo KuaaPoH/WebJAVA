@@ -1,14 +1,15 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+﻿<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %>
 <%@taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" >
 
 <head>
+    <%@include file="/admin/components/theme_loader.jsp" %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Khách Hàng</title>
+    <title>Quáº£n LĂ½ KhĂ¡ch HĂ ng</title>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/images/favicon.png" sizes="16x16">
     <!-- google fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=re" rel="stylesheet">
@@ -34,16 +35,16 @@
         <div class="dashboard-main-body">
             
             <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
-                <h6 class="text-xl font-semibold mb-0 dark:text-white">Danh Sách Khách Hàng</h6>
+                <h6 class="text-xl font-semibold mb-0 dark:text-white">Danh SĂ¡ch KhĂ¡ch HĂ ng</h6>
                 <ul class="flex items-center gap-[6px]">
                     <li class="font-medium">
                         <a href="${pageContext.request.contextPath}/admin" class="flex items-center gap-2 hover:text-primary-600 text-neutral-500 dark:text-neutral-400">
                             <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
-                            Trang Chủ
+                            Trang Chá»§
                         </a>
                     </li>
                     <li class="text-neutral-500 dark:text-neutral-400">-</li>
-                    <li class="text-neutral-500 dark:text-neutral-400 font-medium">Quản Lý Khách Hàng</li>
+                    <li class="text-neutral-500 dark:text-neutral-400 font-medium">Quáº£n LĂ½ KhĂ¡ch HĂ ng</li>
                 </ul>
             </div>
 
@@ -52,7 +53,7 @@
                 <div class="col-span-12">
                     <div class="card border-0 overflow-hidden">
                         <div class="card-header flex items-center justify-between">
-                            <h6 class="card-title mb-0 text-lg">Dữ Liệu Khách Hàng</h6>
+                            <h6 class="card-title mb-0 text-lg">Dá»¯ Liá»‡u KhĂ¡ch HĂ ng</h6>
                         </div>
                         <div class="card-body">
                             <table id="customer-table" class="table border border-neutral-200 dark:border-neutral-600 rounded-lg border-separate">
@@ -60,11 +61,11 @@
                                     <tr>
                                         <th scope="col" class="text-neutral-800 dark:text-white">ID</th>
                                         <th scope="col" class="text-neutral-800 dark:text-white">Avatar</th>
-                                        <th scope="col" class="text-neutral-800 dark:text-white">Tên Đăng Nhập</th>
+                                        <th scope="col" class="text-neutral-800 dark:text-white">TĂªn ÄÄƒng Nháº­p</th>
                                         <th scope="col" class="text-neutral-800 dark:text-white">Email</th>
-                                        <th scope="col" class="text-neutral-800 dark:text-white">SĐT</th>
-                                        <th scope="col" class="text-neutral-800 dark:text-white">Trạng Thái</th>
-                                        <th scope="col" class="text-neutral-800 dark:text-white">Hành Động</th>
+                                        <th scope="col" class="text-neutral-800 dark:text-white">SÄT</th>
+                                        <th scope="col" class="text-neutral-800 dark:text-white">Tráº¡ng ThĂ¡i</th>
+                                        <th scope="col" class="text-neutral-800 dark:text-white">HĂ nh Äá»™ng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -87,8 +88,8 @@
                                                         <c:otherwise>bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400</c:otherwise>
                                                     </c:choose>
                                                     px-4 py-1 rounded-full font-medium text-sm">
-                                                    <c:if test="${customer.isActive}">Đang hoạt động</c:if>
-                                                    <c:if test="${!customer.isActive}">Đã khóa</c:if>
+                                                    <c:if test="${customer.isActive}">Äang hoáº¡t Ä‘á»™ng</c:if>
+                                                    <c:if test="${!customer.isActive}">ÄĂ£ khĂ³a</c:if>
                                                 </span>
                                             </td>
                                             <td>
@@ -96,16 +97,16 @@
                                                     <c:if test="${customer.isActive}">
                                                         <a href="${pageContext.request.contextPath}/admin/customers?action=lock&id=${customer.customerId}" 
                                                            class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center" 
-                                                           title="Khóa tài khoản"
-                                                           onclick="return confirm('Xác nhận khóa tài khoản ${customer.username}?');">
+                                                           title="KhĂ³a tĂ i khoáº£n"
+                                                           onclick="return confirm('XĂ¡c nháº­n khĂ³a tĂ i khoáº£n ${customer.username}?');">
                                                             <iconify-icon icon="solar:lock-bold"></iconify-icon>
                                                         </a>
                                                     </c:if>
                                                     <c:if test="${!customer.isActive}">
                                                         <a href="${pageContext.request.contextPath}/admin/customers?action=unlock&id=${customer.customerId}" 
                                                            class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center" 
-                                                           title="Mở khóa tài khoản"
-                                                           onclick="return confirm('Xác nhận mở khóa tài khoản ${customer.username}?');">
+                                                           title="Má»Ÿ khĂ³a tĂ i khoáº£n"
+                                                           onclick="return confirm('XĂ¡c nháº­n má»Ÿ khĂ³a tĂ i khoáº£n ${customer.username}?');">
                                                             <iconify-icon icon="solar:unlock-bold"></iconify-icon>
                                                         </a>
                                                     </c:if>
@@ -125,7 +126,7 @@
         
         <footer class="d-footer">
             <div class="flex items-center justify-between gap-3">
-                <p class="mb-0">© 2025. All Rights Reserved.</p>
+                <p class="mb-0">Â© 2025. All Rights Reserved.</p>
             </div>
         </footer>
 
@@ -139,16 +140,17 @@
     <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
     
     <script>
-        // Khởi tạo DataTable với cấu hình tiếng Việt
+        // Khá»Ÿi táº¡o DataTable vá»›i cáº¥u hĂ¬nh tiáº¿ng Viá»‡t
         let table = new simpleDatatables.DataTable('#customer-table', {
             labels: {
-                placeholder: "Tìm kiếm...",
-                perPage: "Hiển thị mục",
-                noRows: "Không tìm thấy dữ liệu",
-                info: "Hiển thị {start} đến {end} của {rows} mục",
+                placeholder: "TĂ¬m kiáº¿m...",
+                perPage: "Hiá»ƒn thá»‹ má»¥c",
+                noRows: "KhĂ´ng tĂ¬m tháº¥y dá»¯ liá»‡u",
+                info: "Hiá»ƒn thá»‹ {start} Ä‘áº¿n {end} cá»§a {rows} má»¥c",
             }
         });
     </script>
 
 </body>
 </html>
+
